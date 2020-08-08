@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>详解二叉堆（基础篇） | Nameless Blog</title>
+    
+        <meta name="keywords" content="C">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="堆(heap)，又称为优先队列(priority queue)。尽管名为优先队列，但堆并不是队列。在队列中，我们可以进行的操作是向队列中添加元素和按照元素进入队列的选后顺序取出元素。而在堆中，我们不是按照元素进入队列的先后顺序，而是按照元素的优先级取出元素。 Linux 内核中的调度器会根据各个进程的优先级对程序的执行进行调度。在操作系统运行时，通常会有很多个不同的进程，优先级各不相同。在调度器的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解二叉堆（基础篇）">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayb000dzo3u3rfx2wfw/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="堆(heap)，又称为优先队列(priority queue)。尽管名为优先队列，但堆并不是队列。在队列中，我们可以进行的操作是向队列中添加元素和按照元素进入队列的选后顺序取出元素。而在堆中，我们不是按照元素进入队列的先后顺序，而是按照元素的优先级取出元素。 Linux 内核中的调度器会根据各个进程的优先级对程序的执行进行调度。在操作系统运行时，通常会有很多个不同的进程，优先级各不相同。在调度器的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.cs.cmu.edu/~adamchik/15-121/lectures/Binary%20Heaps/pix/insert.bmp">
+<meta property="article:published_time" content="2018-03-29T13:22:53.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:07:58.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.cs.cmu.edu/~adamchik/15-121/lectures/Binary%20Heaps/pix/insert.bmp">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        详解二叉堆（基础篇）
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-29
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="button">数据结构</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E5%A0%86%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-text">二叉堆的概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E5%A0%86%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">二叉堆的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5"><span class="toc-text">插入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%96%E5%87%BA%E4%BC%98%E5%85%88%E7%BA%A7%E6%9C%80%E9%AB%98%E7%9A%84%E5%85%83%E7%B4%A0"><span class="toc-text">取出优先级最高的元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E5%A0%86%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-text">二叉堆的应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E5%A0%86%E7%9A%84%E7%9B%B8%E5%85%B3%E8%B5%84%E6%96%99"><span class="toc-text">二叉堆的相关资料</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p>堆(heap)，又称为优先队列(priority queue)。尽管名为优先队列，但堆并不是队列。在队列中，我们可以进行的操作是向队列中添加元素和按照元素进入队列的选后顺序取出元素。而在堆中，我们不是按照元素进入队列的先后顺序，而是按照元素的优先级取出元素。</p>
+<p>Linux 内核中的调度器会根据各个进程的优先级对程序的执行进行调度。在操作系统运行时，通常会有很多个不同的进程，优先级各不相同。在调度器的作用下，优先级高的进程被有限执行，优先级靠后的就只能等待。堆是实现这种调度器的一种很合适的数据结构（顺便提一下，现在的 Linux 内核的调度器使用的是基于红黑树的 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Completely_Fair_Scheduler">CFS</a> ，笔者以后会专门介绍）。</p>
+<a id="more"></a>
+
+<h2 id="二叉堆的概念"><a href="#二叉堆的概念" class="headerlink" title="二叉堆的概念"></a>二叉堆的概念</h2><p>我们常用的二叉堆就是一颗任意节点的优先级不小于其子节点的完全二叉树。</p>
+<p>完全二叉树的定义如下：</p>
+<blockquote>
+<p>若设二叉树的高度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层从右向左连续缺若干结点，这就是完全二叉树。</p>
+</blockquote>
+<p>比如下图就是一颗完全二叉树：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">        10</span><br><span class="line">      &#x2F;     \            </span><br><span class="line">   15        30  </span><br><span class="line">  &#x2F;  \      &#x2F;  \</span><br><span class="line">40    50  100   40</span><br></pre></td></tr></table></figure>
+
+<p>现在假设保存的数值越小的节点的优先级越高，那么上图就是一个堆。我们将任意节点不大于其子节点的堆叫做最小堆或小根堆，将任意节点不小于其子节点的堆叫做最大堆或大根堆。因此，上图就是一个小根堆。</p>
+<h2 id="二叉堆的实现"><a href="#二叉堆的实现" class="headerlink" title="二叉堆的实现"></a>二叉堆的实现</h2><p>身为优先队列，肯定要支持如下两个操作：</p>
+<ol>
+<li><p>插入数据</p>
+</li>
+<li><p>取出优先级最高的数据</p>
+</li>
+</ol>
+<p>因为完全二叉树的结构很是整齐，且极少有人类能玩转指针，我们的堆通过数组来实现。当使用数组实现时，堆的节点之间有如下关系（假设根节点的索引为0）：</p>
+<ol>
+<li><p>索引为i的左孩子的索引是 2i</p>
+</li>
+<li><p>索引为i的左孩子的索引是 2i+1</p>
+</li>
+<li><p>索引为i的父结点的索引是 i/2</p>
+</li>
+</ol>
+<p>根节点为 0 时的节点关系很容易依此推出。</p>
+<p>本文中，笔者使用根节点索引为 1 的方式来实现最小堆。数组索引为 0 的地方记录了堆中元素的数目。</p>
+<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>插入时，我们首先将要插入的数据放在数组的尾部。但是这样破坏了堆的特性，因此我们需要进行调整，保证堆的特性。调整操作如下：</p>
+<ol>
+<li><p>将刚插入的节点和其父节点比较，如果符合堆的形成条件或者已经是根节点，那么堆的插入操作就算结束。</p>
+</li>
+<li><p>重复执行上一步。</p>
+</li>
+</ol>
+<p>这个操作通常被称为 Percolation Up，图示如下：</p>
+<p><img src="https://www.cs.cmu.edu/~adamchik/15-121/lectures/Binary%20Heaps/pix/insert.bmp"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert_data</span><span class="params">(<span class="keyword">int</span> *heap,<span class="keyword">int</span> value)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    heap[<span class="number">0</span>] = heap[<span class="number">0</span>] + <span class="number">1</span>;</span><br><span class="line">    heap[heap[<span class="number">0</span>]] = val;</span><br><span class="line">    </span><br><span class="line">    percolate_up(heap);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">percolate_up</span><span class="params">(<span class="keyword">int</span> *heap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> lightIdx, parentIdx;</span><br><span class="line">    lightIdx  = heap[<span class="number">0</span>];</span><br><span class="line">    parentIdx = lightIdx &gt;&gt; <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>((parentIdx &gt; <span class="number">0</span>) &amp;&amp; (heap[lightIdx] &lt; heap[parentIdx])) &#123;</span><br><span class="line">        swap(heap + lightIdx, heap + parentIdx); </span><br><span class="line">        lightIdx  = parentIdx;</span><br><span class="line">        parentIdx = lightIdx &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>swap()</code> 函数就是很常见的交换两个值的函数，实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *a,<span class="keyword">int</span> *b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp;</span><br><span class="line">    temp = *a;</span><br><span class="line">    *a = *b;</span><br><span class="line">    *b = temp;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="取出优先级最高的元素"><a href="#取出优先级最高的元素" class="headerlink" title="取出优先级最高的元素"></a>取出优先级最高的元素</h3><p>取出优先级最高的数据也是同理。我们要做的操作如下：</p>
+<ol>
+<li><p>读取根节点的数据</p>
+</li>
+<li><p>使用最后一个叶节点的数据替换根节点的数据</p>
+</li>
+<li><p>将最后的叶节点（即现在的根节点）不断的和子节点比较。如果其比两个子节点中小的那一个大，则和该子节点交换。直到该节点不大于任一子节点都小或成为叶节点。</p>
+</li>
+</ol>
+<p>与上文的 Percolation Up 相对，本节的步骤 3 被称为 Percolating Down。</p>
+<p>实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">delete_min</span><span class="params">(<span class="keyword">int</span> *heap)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> min;</span><br><span class="line">    <span class="keyword">if</span> (heap[<span class="number">0</span>] &lt; <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Delete Min: Empty Heap!!!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    min = heap[<span class="number">1</span>];</span><br><span class="line">    swap(heap + <span class="number">1</span>, heap + heap[<span class="number">0</span>]);</span><br><span class="line">    heap[<span class="number">0</span>] --;</span><br><span class="line"></span><br><span class="line">    percolating_down(heap);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> min;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">percolating_down</span><span class="params">(<span class="keyword">int</span> *heap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> heavyIdx;</span><br><span class="line">    <span class="keyword">int</span> leftChildIdx, rightChildIdx, minIdx;</span><br><span class="line">    <span class="keyword">int</span> flag = <span class="number">1</span>; <span class="comment">// Swap ? 1: yes; 0: nope</span></span><br><span class="line"></span><br><span class="line">    heavyIdx = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(flag == <span class="number">1</span>) &#123;</span><br><span class="line">        flag     = <span class="number">0</span>;</span><br><span class="line">        leftChildIdx = heavyIdx &lt;&lt; <span class="number">1</span>;</span><br><span class="line">        rightChildIdx = leftChildIdx + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (leftChildIdx &gt; heap[<span class="number">0</span>]) &#123;</span><br><span class="line">            <span class="comment">// both children are null</span></span><br><span class="line">            <span class="keyword">break</span>; </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (rightChildIdx &gt; heap[<span class="number">0</span>]) &#123;</span><br><span class="line">            <span class="comment">// right children is null</span></span><br><span class="line">            minIdx = leftChildIdx;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            minIdx = heap[leftChildIdx] &lt; heap[rightChildIdx] ？ lefiChildIndex : rightChildIndex;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (heap[heavyIdx] &gt; heap[minIdx]) &#123;</span><br><span class="line">            swap(heap + heavyIdx, heap + minIdx);</span><br><span class="line">            heavyIdx = minIdx;</span><br><span class="line">            flag = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二叉堆的应用"><a href="#二叉堆的应用" class="headerlink" title="二叉堆的应用"></a>二叉堆的应用</h2><p>###堆排序：</p>
+<p>所谓堆排序就是使用堆这一数据结构进行的排序操作。我们只需要建一个堆，之后不断输出优先级最高的数据即可完成排序。时间复杂度 O(log N)。</p>
+<h2 id="二叉堆的相关资料"><a href="#二叉堆的相关资料" class="headerlink" title="二叉堆的相关资料"></a>二叉堆的相关资料</h2><p><a target="_blank" rel="noopener" href="https://visualgo.net/zh/heap">这里</a> 可以看到堆的可视化。</p>
+<p><a target="_blank" rel="noopener" href="https://www.patest.cn/contests/pat-a-practise/1098">陈越姥姥的题目</a> 是个不错的基础练习。</p>
+<p><a target="_blank" rel="noopener" href="http://poj.org/problem?id=3784">POJ 3784</a> 是一道很不错的基础练习题。</p>
+<p>（提示：新建一个大根堆和一个小根堆，保证大根堆里面的数小于小根堆里的数，这样大根堆的堆顶即为中位数。出现新的数字时，只需与之比较即可）。</p>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-cats__link button">数据结构</a>
+    
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

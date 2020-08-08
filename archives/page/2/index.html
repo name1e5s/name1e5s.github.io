@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>归档 | Nameless Blog</title>
+    
+
+    <!-- OpenGraph -->
+     
+        <meta property="og:type" content="website">
+<meta property="og:title" content="Nameless Blog">
+<meta property="og:url" content="https://blog.name1e5s.com/archives/page/2/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Name1e5s">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+    <div class="cover">
+        <div class="cover__logo">
+            
+                <h1>Name1e5s</h1>
+            
+        </div>
+        
+            <div class="cover__intro">
+                <p>20 岁，是学生</p>
+ 
+            </div>
+        
+    </div>
+
+            <main class='main'>
+    
+        <div class="archives">
+            
+                    <div class="archives-item">
+                        <div class="archives-left">
+                            <div class="archives-icon icon-lg"></div>
+                        </div>
+                        <div class="archives-content">
+                            <h3>2019</h3>
+                        </div>
+                    </div>
+                
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        06-29
+                        &nbsp;
+                        <a href="/ckdlp3ayq001kzo3u82663f5d/">
+                            <span class="archives-title">
+                                
+                                    MIPS CPU 实现指南(零) -- 简介
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-04
+                        &nbsp;
+                        <a href="/ckdlp3ayi000tzo3u76954ld6/">
+                            <span class="archives-title">
+                                
+                                    Go 语言系统调用
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                    <div class="archives-item">
+                        <div class="archives-left">
+                            <div class="archives-icon icon-lg"></div>
+                        </div>
+                        <div class="archives-content">
+                            <h3>2018</h3>
+                        </div>
+                    </div>
+                
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        09-28
+                        &nbsp;
+                        <a href="/ckdlp3ay60007zo3ueoq8hxgv/">
+                            <span class="archives-title">
+                                
+                                    CS:APP Lab 3 解题报告 - 64位
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        08-09
+                        &nbsp;
+                        <a href="/ckdlp3ayt001pzo3u2xysdhtk/">
+                            <span class="archives-title">
+                                
+                                    数字逻辑 - 组合电路：小型设计 笔记
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        07-30
+                        &nbsp;
+                        <a href="/ckdlp3ayo001czo3u3seqey1x/">
+                            <span class="archives-title">
+                                
+                                    手撸调试器(1) —— 载入 inferior
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        07-24
+                        &nbsp;
+                        <a href="/ckdlp3ayp001fzo3u68ozgrl0/">
+                            <span class="archives-title">
+                                
+                                    当你 malloc(0) 时会发生什么
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        07-04
+                        &nbsp;
+                        <a href="/ckdlp3ayk0010zo3u3p4yfpvy/">
+                            <span class="archives-title">
+                                
+                                    使用正则表达式匹配 3 的倍数
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        05-13
+                        &nbsp;
+                        <a href="/ckdlp3ay70008zo3udm4rfp6i/">
+                            <span class="archives-title">
+                                
+                                    CS:APP Lab 4 解题报告
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        04-04
+                        &nbsp;
+                        <a href="/ckdlp3ayj000yzo3u5s17fodk/">
+                            <span class="archives-title">
+                                
+                                    详解并查集（基础篇）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        04-01
+                        &nbsp;
+                        <a href="/ckdlp3ay80009zo3uaarx2ous/">
+                            <span class="archives-title">
+                                
+                                    使用 C/C++ 模拟 defer 关键字
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-29
+                        &nbsp;
+                        <a href="/ckdlp3ayb000dzo3u3rfx2wfw/">
+                            <span class="archives-title">
+                                
+                                    详解二叉堆（基础篇）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-24
+                        &nbsp;
+                        <a href="/ckdlp3ay20003zo3ua2xmdxlz/">
+                            <span class="archives-title">
+                                
+                                    详解 AVL 树（基础篇）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-22
+                        &nbsp;
+                        <a href="/ckdlp3axz0001zo3u5joefskh/">
+                            <span class="archives-title">
+                                
+                                    详解二叉树（基础与BST）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-17
+                        &nbsp;
+                        <a href="/ckdlp3aye000jzo3u90ughfcf/">
+                            <span class="archives-title">
+                                
+                                    详解 C 语言链表（应用篇） -- 浅析 Linux kernel 中的 list.h 头文件（二）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-17
+                        &nbsp;
+                        <a href="/ckdlp3ayd000ezo3ua4if5ex1/">
+                            <span class="archives-title">
+                                
+                                    详解 C 语言链表（应用篇） -- 浅析 Linux kernel 中的 list.h 头文件（一）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-16
+                        &nbsp;
+                        <a href="/ckdlp3ayf000lzo3udulogfkx/">
+                            <span class="archives-title">
+                                
+                                    详解 C 语言链表（实践篇）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-14
+                        &nbsp;
+                        <a href="/ckdlp3ayg000qzo3ua8fv7p35/">
+                            <span class="archives-title">
+                                
+                                    详解 C 语言链表（基础篇）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        03-01
+                        &nbsp;
+                        <a href="/ckdlp3ays001mzo3uaz6r2ika/">
+                            <span class="archives-title">
+                                
+                                    NES 图像技术导引
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        02-25
+                        &nbsp;
+                        <a href="/ckdlp3ayn0017zo3u86img223/">
+                            <span class="archives-title">
+                                
+                                    NES 模拟器实现指南（零）
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        02-18
+                        &nbsp;
+                        <a href="/ckdlp3aym0015zo3uauy2glwt/">
+                            <span class="archives-title">
+                                
+                                    Hello World
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        01-29
+                        &nbsp;
+                        <a href="/ckdlp3az6002nzo3u639k2fiz/">
+                            <span class="archives-title">
+                                
+                                    【译】C Puzzles —— 有趣的 C 语言问题
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        01-11
+                        &nbsp;
+                        <a href="/ckdlp3aza002qzo3u3m3162oq/">
+                            <span class="archives-title">
+                                
+                                    Linklab 解题报告
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                    <div class="archives-item">
+                        <div class="archives-left">
+                            <div class="archives-icon icon-lg"></div>
+                        </div>
+                        <div class="archives-content">
+                            <h3>2017</h3>
+                        </div>
+                    </div>
+                
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        12-21
+                        &nbsp;
+                        <a href="/ckdlp3az7002ozo3u4nva0bvc/">
+                            <span class="archives-title">
+                                
+                                    CS:APP Lab 3 解题报告
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+                <div class="archives-item">
+                    <div class="archives-left">
+                        <div class="archives-icon">
+
+                        </div>
+                    </div>
+                    <span class="archives-content">
+                        12-10
+                        &nbsp;
+                        <a href="/ckdlp3azc002zzo3uhgih64c2/">
+                            <span class="archives-title">
+                                
+                                    CS:APP Lab 2 解题报告
+                                
+                            </span>
+                        </a>
+                        <br><br>
+                    </span>
+                </div>
+            
+        </div>
+    
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+
+
+    </body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>使用 C/C++ 模拟 defer 关键字 | Nameless Blog</title>
+    
+        <meta name="keywords" content="Go 语言">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="笔者在翻译完 这篇文章 以及同系列的下一篇文章（尚未发布…）后，受到了 ESR 大神的鼓舞，遂决定在寒假学习一下 Go 语言。在学习 Go 语言的过程中,觉着这语言和之前学到的 C&#x2F;C++ ，Scheme 相比有着无法比较的简洁感。笔者尤其喜欢 defer 这一关键字的设计。于是就在今天尝试使用 C&#x2F;C++ 模拟了下 defer 关键字。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 C&#x2F;C++ 模拟 defer 关键字">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ay80009zo3uaarx2ous/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="笔者在翻译完 这篇文章 以及同系列的下一篇文章（尚未发布…）后，受到了 ESR 大神的鼓舞，遂决定在寒假学习一下 Go 语言。在学习 Go 语言的过程中,觉着这语言和之前学到的 C&#x2F;C++ ，Scheme 相比有着无法比较的简洁感。笔者尤其喜欢 defer 这一关键字的设计。于是就在今天尝试使用 C&#x2F;C++ 模拟了下 defer 关键字。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-01T10:54:36.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:08:00.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="Go 语言">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        使用 C/C++ 模拟 defer 关键字
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/04/" class="button" style="color: #808080;">
+    2018-04-01
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/Go/" class="button">Go</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E-defer-%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">关于 defer 的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#defer-%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-text">defer 的行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E5%AE%9E%E7%8E%B0"><span class="toc-text">C++ 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%AD%A3%E7%89%88-defer-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">与正版 defer 的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E5%AE%9E%E7%8E%B0-1"><span class="toc-text">C 实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%AE%9E%E7%8E%B0%E7%89%88%E6%9C%AC"><span class="toc-text">其他实现版本</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <blockquote>
+<p>笔者在翻译完 <a target="_blank" rel="noopener" href="https://linux.cn/article-9268-1.html">这篇文章</a> 以及同系列的下一篇文章（尚未发布…）后，受到了 ESR 大神的鼓舞，遂决定在寒假学习一下 Go 语言。在学习 Go 语言的过程中,觉着这语言和之前学到的 C/C++ ，Scheme 相比有着无法比较的简洁感。笔者尤其喜欢 <code>defer</code> 这一关键字的设计。于是就在今天尝试使用 C/C++ 模拟了下 <code>defer</code> 关键字。</p>
+</blockquote>
+<blockquote>
+<pre><code>                                                  ---- 某咸鱼的碎碎念</code></pre>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="关于-defer-的简介"><a href="#关于-defer-的简介" class="headerlink" title="关于 defer 的简介"></a>关于 defer 的简介</h2><p><code>defer</code> 这一关键字可以说是 Go 语言的一大亮点。这一关键字通常用于资源的释放，会在函数返回之前进行调用。例如，当我们需要读取一个文件时，我们在 C/C++ 里面通常会如此操作：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inm</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FILE *fp;</span><br><span class="line">    fp = fopen(<span class="string">&quot;114514.txt&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(!fp) &#123;</span><br><span class="line">        <span class="comment">// open file failed</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// blah blah</span></span><br><span class="line">    <span class="keyword">if</span>(ERROR OCCURED) &#123;</span><br><span class="line">        <span class="comment">// handle</span></span><br><span class="line">        fclose(fp);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// blah blah</span></span><br><span class="line"></span><br><span class="line">    fclose(fp);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有了 <code>defer</code> 之后，我们在 Go 语言中即可进行如下操作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">inm</span><span class="params">()</span></span> &#123;</span><br><span class="line">    file,err := os.Open(<span class="string">&quot;114514.txt&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">// open file failed</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// blah blah</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就不必费心思考是否忘记关闭文件着一问题。只需处理我们真正需要处理的问题即可。同时代码的可读性也大幅提升。</p>
+<h2 id="defer-的行为"><a href="#defer-的行为" class="headerlink" title="defer 的行为"></a>defer 的行为</h2><p>粗略地讲，当我们在使用 <code>defer</code> 这一关键字时，我们的语句就会就会被加入到表中。在函数 <code>return</code> 前，这个表里的函数按照后进先出的顺序执行。因此，对于如下示例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">zafechi3</span><span class="params">()</span></span> &#123; <span class="comment">// ザフェチ3 </span></span><br><span class="line">    <span class="keyword">defer</span> fmt.Print(<span class="string">&quot; 24 &quot;</span>)</span><br><span class="line">    <span class="keyword">defer</span> fmt.Print(<span class="string">&quot; 歳 &quot;</span>)</span><br><span class="line">    <span class="keyword">defer</span> fmt.Print(<span class="string">&quot; 学生です &quot;</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们的输出就是 “ 学生です  歳  24 ”，而不是喜闻乐见的 “ 24  歳  学生です ”。</p>
+<p><code>defer</code> 的更多特性还有很多坑点都不在此说明。</p>
+<h2 id="C-实现"><a href="#C-实现" class="headerlink" title="C++ 实现"></a>C++ 实现</h2><p>因为 <code>defer</code> 关键字的特性和 C++ 的类的析构函数类似，我们即可很容易的模拟出 C++ 版本的 <code>defer</code>。如下是笔者的第一版 ·<code>defer</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Function&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">doDefer</span> &#123;</span></span><br><span class="line">    Function f;</span><br><span class="line">    doDefer(Function f) : f(f) &#123;&#125;</span><br><span class="line">    ~doDefer() &#123; f(); &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Function&gt;</span><br><span class="line"><span class="function">doDefer&lt;Function&gt; <span class="title">deferer</span><span class="params">(Function F)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> doDefer&lt;Function&gt;(f);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> defer(expr) auto __defered = deferer([&amp;]()&#123;expr;&#125;)</span></span><br></pre></td></tr></table></figure>
+
+<p>基本上实现了 <code>defer</code> 的功能，但是现在还无法在一个文件里多次调用 <code>defer</code>，不给力啊老师！</p>
+<p>在经过了半个小时的查找之后，笔者发现了 <code>__COUNTER__</code> 宏，这个宏就相当于是一个计数器，在编译时，<code>__COUNTER__</code> 会被替换为它在源码中已经出现的次数。这个特性使得其很适合拿来区分多个重复的变量，示例如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span>   FUNC1(x,y)   x##y</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span>   FUNC2(x,y)   FUNC1(x,y)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span>   FUNC(x)   FUNC2(x,__COUNTER__)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FUNC</span><span class="params">(a)</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FUNC</span><span class="params">(a)</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">FUNC</span><span class="params">(A)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>在编译时，那三个 <code>int FUNC(a)</code> 会被依次展开为 <code>int a0</code>,<code>int a1</code>,<code>int a2</code>。利用这个特性，我们可以重写之前的 <code>defer</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFER_1(x, y) x##y</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFER_2(x, y) DEFER_1(x, y)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFER_0(x)    DEFER_2(x, __COUNTER__)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> defer(expr)   auto DEFER_0(_defered_option) = deferer([&amp;]()&#123;expr;&#125;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Function&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">doDefer</span> &#123;</span></span><br><span class="line">    Function f;</span><br><span class="line">    doDefer(Function f) : f(f) &#123;&#125;</span><br><span class="line">    ~doDefer() &#123; f(); &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Function&gt;</span><br><span class="line"><span class="function">doDefer&lt;Function&gt; <span class="title">deferer</span><span class="params">(Function F)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> doDefer&lt;Function&gt;(f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们就能在 C++ 中愉快的使用 <code>defer</code> 辣~</p>
+<h3 id="与正版-defer-的区别"><a href="#与正版-defer-的区别" class="headerlink" title="与正版 defer 的区别"></a>与正版 defer 的区别</h3><p>我们之前在说过，Go 语言的对于多个 <code>defer</code> 的处理是按照后进先出的顺序处理的。但是我们实现的 C++ 版本的 defer 显然不是如此，因为对于如下程序：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inm</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    defer(<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot; 24 &quot;</span>;)</span><br><span class="line">    defer(<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot; 歳 &quot;</span>;);</span><br><span class="line">    defer(<span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot; 学生です &quot;</span>;);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们的输出就是喜闻乐见的 “ 24  歳  学生です ”。不过，大致的功能还是相同的。</p>
+<h2 id="C-实现-1"><a href="#C-实现-1" class="headerlink" title="C 实现"></a>C 实现</h2><p>在 C，至少是标准 C 里面，我们无法优雅地实现 <code>defer</code> 这一关键字，但是由于 <code>gcc</code> 以及 <code>clang</code> 的拓展的存在，使得我们还是可以在短短几行内实现这一操作。</p>
+<p>我们使用的拓展如下：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#Common-Variable-Attributes">Common-Variable-Attributes</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://clang.llvm.org/docs/BlockLanguageSpec.html">C Block 闭包</a></p>
+</li>
+</ul>
+<p>其中 GCC 需要来自水果的补丁才能使用闭包功能，关于 Block 闭包，可以看<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/0d4b66a84448">这里</a>。</p>
+<p>有了这两个拓展，写出 C 语言版本的 <code>defer</code> 简直易如反掌：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">deferer</span><span class="params">(<span class="keyword">void</span> (^*expr)(<span class="keyword">void</span>))</span> </span>&#123; (*expr)(); &#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFER_1(x,y) x##y</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFER_2(x, y) DEFER_1(x, y)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEFER_0(x)    DEFER_2(x, __COUNTER__)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> defer __attribute__((cleanup(deferer))) void (^DEFER_0(_defered_option))(void) =</span></span><br></pre></td></tr></table></figure>
+
+<p>调用时候，只需：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">defer ^&#123; &lt;expr&gt; &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>emmmmm…. 看着有点麻烦但也不是不能接受….</p>
+<h2 id="其他实现版本"><a href="#其他实现版本" class="headerlink" title="其他实现版本"></a>其他实现版本</h2><p>写完着两份程序之后，笔者眉头一皱，觉得不简单。这个出现了近 10 年的关键字，肯定会有前辈实现过了。经过搜索，找出了如下几个，供读者欣赏：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="http://the-witness.net/news/2012/11/scopeexit-in-c11/">Ignacio Castaño</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://www.gingerbill.org/article/defer-in-cpp.html">gingerBill</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://oded.blog/2017/10/05/go-defer-in-cpp/">Oded Lazar</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_66_0/libs/scope_exit/doc/html/index.html">Boost.ScopeExit</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/Microsoft/GSL/blob/ebe7ebfd855a95eb93783164ffb342dbd85cbc27/include/gsl/gsl_util#L85-L89">巨硬的 GSL</a></p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// final_act allows you to ensure something gets run at the end of a scope</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">F</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">final_act</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    explicit final_act(F f) noexcept : f_(std::move(f)), invoke_(true) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    final_act(final_act&amp;&amp; other) <span class="keyword">noexcept</span> : f_(<span class="built_in">std</span>::<span class="built_in">move</span>(other.f_)), invoke_(other.invoke_)</span><br><span class="line">    &#123;</span><br><span class="line">        other.invoke_ = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    final_act(<span class="keyword">const</span> final_act&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    final_act&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> final_act&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">    ~final_act() <span class="keyword">noexcept</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (invoke_) f_();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    F f_;</span><br><span class="line">    <span class="keyword">bool</span> invoke_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// finally() - convenience function to generate a final_act</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">F</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">inline</span> <span class="title">final_act</span>&lt;F&gt; <span class="title">finally</span>(<span class="title">const</span> <span class="title">F</span>&amp; <span class="title">f</span>) <span class="title">noexcept</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">return</span> final_act&lt;F&gt;(f);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">F</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">inline</span> <span class="title">final_act</span>&lt;F&gt; <span class="title">finally</span>(<span class="title">F</span>&amp;&amp; <span class="title">f</span>) <span class="title">noexcept</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">return</span> final_act&lt;F&gt;(<span class="built_in">std</span>::forward&lt;F&gt;(f));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>pepper_chico</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> defer = <span class="built_in">shared_ptr</span>&lt;<span class="keyword">void</span>&gt;;</span><br></pre></td></tr></table></figure>
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/Go/" class="post-cats__link button">Go</a>
+    
+    
+        <a href="/tags/Go-%E8%AF%AD%E8%A8%80/" class="post-tags__link button"># Go 语言</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

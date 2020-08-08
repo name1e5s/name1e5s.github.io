@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>详解 AVL 树（基础篇） | Nameless Blog</title>
+    
+        <meta name="keywords" content="C">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="AVL 树是一种平衡二叉搜索树，得名于其发明者的名字（ Adelson-Velskii 以及 Landis）。（可见名字长的好处，命名都能多占一个字母出来）。其递归定义如下：  左右子树的高度差小于等于 1。  其每一个子树均为 AVL 树。   基于这一句话，我们就可以进行判断其一棵树是否为二叉树了。 练习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解 AVL 树（基础篇）">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ay20003zo3ua2xmdxlz/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="AVL 树是一种平衡二叉搜索树，得名于其发明者的名字（ Adelson-Velskii 以及 Landis）。（可见名字长的好处，命名都能多占一个字母出来）。其递归定义如下：  左右子树的高度差小于等于 1。  其每一个子树均为 AVL 树。   基于这一句话，我们就可以进行判断其一棵树是否为二叉树了。 练习">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.tutorialspoint.com/data_structures_algorithms/images/avl_right_rotation.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/data_structures_algorithms/images/avl_left_rotation.jpg">
+<meta property="og:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/AVL_LL.png">
+<meta property="og:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/AVL_LL.png">
+<meta property="og:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/AVL_LR.png">
+<meta property="article:published_time" content="2018-03-24T13:22:53.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:05:30.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.tutorialspoint.com/data_structures_algorithms/images/avl_right_rotation.jpg">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        详解 AVL 树（基础篇）
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-24
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="button">数据结构</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">实现原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E7%9A%84%E5%B9%B3%E8%A1%A1%E5%8C%96%E6%93%8D%E4%BD%9C"><span class="toc-text">树的平衡化操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%B3%E6%97%8B%E6%93%8D%E4%BD%9C"><span class="toc-text">右旋操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B7%A6%E6%97%8B%E6%93%8D%E4%BD%9C"><span class="toc-text">左旋操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9C%80%E8%A6%81%E5%B9%B3%E8%A1%A1%E7%9A%84%E5%9B%9B%E7%A7%8D%E6%83%85%E5%86%B5"><span class="toc-text">需要平衡的四种情况</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-text">实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AVL-%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C"><span class="toc-text">AVL 树的插入和删除操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%92%E5%85%A5"><span class="toc-text">插入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4"><span class="toc-text">删除</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0"><span class="toc-text">练习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%BA%BF%E6%BC%94%E7%A4%BA"><span class="toc-text">在线演示</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p>AVL 树是一种平衡二叉搜索树，得名于其发明者的名字（ Adelson-Velskii 以及 Landis）。（可见名字长的好处，命名都能多占一个字母出来）。其递归定义如下：</p>
+<ol>
+<li><p>左右子树的高度差小于等于 1。</p>
+</li>
+<li><p>其每一个子树均为 AVL 树。</p>
+</li>
+</ol>
+<p>基于这一句话，我们就可以进行判断其一棵树是否为二叉树了。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/balanced-binary-tree/description/">练习</a></p>
+<a id="more"></a>
+
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>为了保证二叉树的平衡， AVL 树引入了所谓监督机制，就是在树的某一部分的不平衡度超过一个阈值后触发相应的平衡操作。保证树的平衡度在可以接受的范围内。</p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>既然引入了监督机制，我们必然需要一个监督指标，以此来判断是否需要进行平衡操作。这个监督指标被称为“平衡因子（Balance Factor）”。定义如下：</p>
+<blockquote>
+<p><strong>平衡因子</strong>： 某个结点的左子树的高度减去右子树的高度得到的差值。</p>
+</blockquote>
+<p>基于平衡因子，我们就可以这样定义 AVL 树。</p>
+<blockquote>
+<p>AVL 树： 所有结点的平衡因子的绝对值都不超过 1 的二叉树。</p>
+</blockquote>
+<p>为了计算平衡因子，我们自然需要在节点中引入高度这一属性。在这里，我们把节点的高度定义为其左右子树的高度的最大值。因此，引入了高度属性的 AVL 树的节点定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span>             data;</span><br><span class="line">    <span class="keyword">int</span>             height;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>     *<span class="title">left</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>     *<span class="title">right</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">node</span> <span class="title">node_t</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">nodeptr_t</span>;</span></span><br></pre></td></tr></table></figure>
+
+<p>定义了节点的高度属性后，我们还需要编写函数计算某一个节点的高度，借由树的递归定义，我们很容易写出这一函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">treeHeight</span><span class="params">(<span class="keyword">nodeptr_t</span> root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> max(treeHeight(root-&gt;left),treeHeight(root-&gt;right)) + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>max 的定义很一般，在此不再说明。</p>
+<p>与之对应地，我们在进行如下操作时需要更新受影响的所有节点的高度：</p>
+<ol>
+<li>在插入结点时， 沿插入的路径更新结点的高度值</li>
+<li>在删除结点时（delete）,沿删除的路径更新结点的高度值</li>
+</ol>
+<p>有了高度，计算平衡因子的操作就得以很简单的实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">treeGetBalanceFactor</span><span class="params">(<span class="keyword">nodeptr_t</span> root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> x-&gt;left-&gt;height - x-&gt;right-&gt;height;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当平衡因子的绝对值大于 1 时，就会触发树的修正（修正集团看到这里请给我打广告费），或者说是再平衡操作。</p>
+<h3 id="树的平衡化操作"><a href="#树的平衡化操作" class="headerlink" title="树的平衡化操作"></a>树的平衡化操作</h3><p>二叉树的平衡化有两大基础操作： 左旋和右旋。左旋，即是逆时针旋转；右旋，即是顺时针旋转。这种旋转在整个平衡化过程中可能进行一次或多次，这两种操作都是从失去平衡的最小子树根结点开始的(即离插入结点最近且平衡因子超过1的祖结点)。</p>
+<h4 id="右旋操作"><a href="#右旋操作" class="headerlink" title="右旋操作"></a>右旋操作</h4><p><img src="https://www.tutorialspoint.com/data_structures_algorithms/images/avl_right_rotation.jpg"></p>
+<p>所谓右旋操作，就是把上图中的 B 节点和 C 节点进行所谓“父子交换”。在仅有这三个节点时候，是十分简单的。但是当 B 节点处存在右孩子时，事情就变得有点复杂了。我们通常的操作是：<strong>抛弃右孩子，将之和旋转后的节点 C 相连，成为节点 C 的左孩子</strong>。这样，我们就能写出对应的代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">treeRotateRight</span><span class="params">(<span class="keyword">nodeptr_t</span> root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> left = root-&gt;left;</span><br><span class="line">    </span><br><span class="line">    root-&gt;left = left-&gt;right; <span class="comment">// 将将要被抛弃的节点连接为旋转后的 root 的左孩子</span></span><br><span class="line">    left-&gt;right = root; <span class="comment">// 调换父子关系</span></span><br><span class="line"></span><br><span class="line">    left-&gt;height = max(treeHeight(left-&gt;left), treeHeight(left-&gt;right))+<span class="number">1</span>;</span><br><span class="line">    right-&gt;height = max(treeHeight(right-&gt;left), treeHeight(right-&gt;right))+<span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> left;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="左旋操作"><a href="#左旋操作" class="headerlink" title="左旋操作"></a>左旋操作</h4><p><img src="https://www.tutorialspoint.com/data_structures_algorithms/images/avl_left_rotation.jpg"></p>
+<p>左旋操作和右旋操作十分类似，唯一不同的就是需要将左右呼唤下。我们可以认为这两种操作是对称的。C 代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">treeRotateLeft</span><span class="params">(<span class="keyword">nodeptr_t</span> root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> right = root-&gt;right;</span><br><span class="line"></span><br><span class="line">    root-&gt;right = right-&gt;left;</span><br><span class="line">    right-&gt;left = root;</span><br><span class="line"></span><br><span class="line">    left-&gt;height = max(treeHeight(left-&gt;left), treeHeight(left-&gt;right))+<span class="number">1</span>;</span><br><span class="line">    right-&gt;height = max(treeHeight(right-&gt;left), treeHeight(right-&gt;right))+<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> right;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="需要平衡的四种情况"><a href="#需要平衡的四种情况" class="headerlink" title="需要平衡的四种情况"></a>需要平衡的四种情况</h4><ol>
+<li>LL 型</li>
+</ol>
+<p><img src="https://coding.net/u/name1e5s/p/pic/git/raw/master/AVL_LL.png"></p>
+<p>所谓 LL 型就是上图左边那种情况，即因为在根节点的左孩子的左子树添加了新节点，导致根节点的平衡因子变为 +2，二叉树失去平衡。对于这种情况，对节点 n 右旋一次即可。</p>
+<ol start="2">
+<li>RR 型</li>
+</ol>
+<p><img src="https://coding.net/u/name1e5s/p/pic/git/raw/master/AVL_LL.png"></p>
+<p>RR 型的情况和 LL 型完全对称。只需要对节点 n 进行一次左旋即可修正。</p>
+<ol start="3">
+<li>LR 型</li>
+</ol>
+<p><img src="https://coding.net/u/name1e5s/p/pic/git/raw/master/AVL_LR.png"></p>
+<p>LR 就是将新的节点插入到了 n 的左孩子的右子树上导致的不平衡的情况。这时我们需要的是先对 i 进行一次左旋再对 n 进行一次右旋。</p>
+<ol start="4">
+<li>RL 型</li>
+</ol>
+<p>RL 就是将新的节点插入到了 n 的右孩子的左子树上导致的不平衡的情况。这时我们需要的是先对 i 进行一次右旋再对 n 进行一次左旋。</p>
+<p>这四种情况的判断很简单。我们根据破坏树的平衡性（平衡因子的绝对值大于 1）的节点以及其子节点的平衡因子来判断平衡化类型。这样我们即可得出如下表格：</p>
+<table>
+<thead>
+<tr>
+<th>“犯罪节点”</th>
+<th>左孩子</th>
+<th>右孩子</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+2</td>
+<td>+1</td>
+<td>-</td>
+<td>LL</td>
+</tr>
+<tr>
+<td>+2</td>
+<td>-1</td>
+<td>-</td>
+<td>LR</td>
+</tr>
+<tr>
+<td>-2</td>
+<td>-</td>
+<td>+1</td>
+<td>RL</td>
+</tr>
+<tr>
+<td>-2</td>
+<td>-</td>
+<td>-1</td>
+<td>RR</td>
+</tr>
+</tbody></table>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>平衡化操作的实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">treeRebalance</span><span class="params">(<span class="keyword">nodeptr_t</span> root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> factor = treeGetBalanceFactor(root);</span><br><span class="line">    <span class="keyword">if</span>(factor &gt; <span class="number">1</span> &amp;&amp; treeGetBalanceFactor(root-&gt;left) &gt; <span class="number">0</span>) <span class="comment">// LL</span></span><br><span class="line">        <span class="keyword">return</span> treeRotateRight(root);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(factor &gt; <span class="number">1</span> &amp;&amp; treeGetBalanceFactor(root-&gt;left) &lt;= <span class="number">0</span>) &#123; <span class="comment">//LR</span></span><br><span class="line">        root-&gt;left = treeRotateLeft(root-&gt;left);</span><br><span class="line">        <span class="keyword">return</span> treeRotateRight(root);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(factor &lt; <span class="number">-1</span> &amp;&amp; treeGetBalanceFactor(root-&gt;right) &lt;= <span class="number">0</span>) <span class="comment">// RR</span></span><br><span class="line">        <span class="keyword">return</span> treeRotateLeft(root);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>((factor &lt; <span class="number">-1</span> &amp;&amp; treeGetBalanceFactor(root-&gt;right) &gt; <span class="number">0</span>) &#123; <span class="comment">// RL</span></span><br><span class="line">         root-&gt;right = treeRotateLeft(root-&gt;right);</span><br><span class="line">        <span class="keyword">return</span> treeRotateLeft(temp);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123; <span class="comment">// Nothing happened.</span></span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AVL-树的插入和删除操作"><a href="#AVL-树的插入和删除操作" class="headerlink" title="AVL 树的插入和删除操作"></a>AVL 树的插入和删除操作</h3><p>基于上文的再平衡操作，现在我们可以写出完整的 AVL 树的插入/删除操作。</p>
+<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><p>在<a target="_blank" rel="noopener" href="https://kuso-kodo.github.io/2018/03/22/Binary-Basic/">上文</a>中，我们见到了使用迭代进行的二叉搜索树的插入操作。本文使用递归的方法完成这一操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">treeInsert</span><span class="params">(<span class="keyword">nodeptr_t</span> *rootptr, <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> newNode;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> root = *rootptr;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        newNode = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line">        assert(newNode);</span><br><span class="line"></span><br><span class="line">        newNode-&gt;data = value;</span><br><span class="line">        newNode-&gt;left = newNode-&gt;right = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">        *rootptr = newNode;</span><br><span class="line">        root = *rootptr;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(root-&gt;data == value) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(root-&gt;data &lt; value)</span><br><span class="line">            treeInsert(&amp;root-&gt;right,value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            treeInsert(&amp;root-&gt;left,value)</span><br><span class="line">    &#125;</span><br><span class="line">    root-&gt;height = treeHeight(root);</span><br><span class="line">    treeRebalance(root);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基于递归，我们巧妙地将所有受影响的节点都进行了平衡。</p>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>删除操作也一样使用了递归。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">treeDeleteMin</span><span class="params">(<span class="keyword">nodeptr_t</span> *root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> *toFree;</span><br><span class="line">    <span class="keyword">int</span> retval;</span><br><span class="line"></span><br><span class="line">    assert(*root);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((*root)-&gt;left) &#123;</span><br><span class="line">        retval = treeDeleteMin(&amp;(*root)-&gt;left);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        toFree = *root;</span><br><span class="line">        retval = toFree-&gt;key;</span><br><span class="line">        *root = toFree-&gt;right;</span><br><span class="line">        <span class="built_in">free</span>(toFree);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    treeRebalance(root);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">treeDelete</span><span class="params">(<span class="keyword">nodeptr_t</span> *rootptr, <span class="keyword">int</span> data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> *toFree; <span class="comment">// 拜拜了您呐</span></span><br><span class="line">    <span class="keyword">nodeptr_t</span> root = *rootptr;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(root) &#123;</span><br><span class="line">        <span class="keyword">if</span>(root-&gt;data == value) &#123;</span><br><span class="line">            <span class="keyword">if</span>(root-&gt;right) &#123;</span><br><span class="line">                root-&gt;data = treeDeleteMin(&amp;(root-&gt;right));</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                toFree = root;</span><br><span class="line">                *rootptr = toFree-&gt;left;</span><br><span class="line">                <span class="built_in">free</span>(toFree);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(root-&gt;data &lt; value)</span><br><span class="line">            treeDelete(&amp;root-&gt;right,value);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            treeDelete(&amp;root-&gt;left,value)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        treeRebalance(root);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h2><p><a target="_blank" rel="noopener" href="https://www.patest.cn/contests/pat-a-practise/1123">陈越姥姥的题目</a> 是一道不错的练习。</p>
+<h2 id="在线演示"><a href="#在线演示" class="headerlink" title="在线演示"></a>在线演示</h2><p><a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/AVLtree.html">这里</a>可以看到 AVL 树的可视化。</p>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="post-cats__link button">数据结构</a>
+    
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

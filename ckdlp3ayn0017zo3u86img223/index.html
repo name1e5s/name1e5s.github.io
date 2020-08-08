@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>NES 模拟器实现指南（零） | Nameless Blog</title>
+    
+        <meta name="keywords" content="Go 语言, NES">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="简介Family Computer （ファミリーコンピュータ），缩写为 Famicom （ファミコン），是日本任天堂公司推出的一种第一代家用游戏主机，在国内常被称为红白机。红白机有两种，一种是日本版，体积较小，机身以红色和白色为主，俗称“红白机”；另一种是欧美版，体积较大，机身以灰色为主，称为 Nintendo Entertainment System，简称NES。两套机器的主要差别是支持的视频制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NES 模拟器实现指南（零）">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayn0017zo3u86img223/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="简介Family Computer （ファミリーコンピュータ），缩写为 Famicom （ファミコン），是日本任天堂公司推出的一种第一代家用游戏主机，在国内常被称为红白机。红白机有两种，一种是日本版，体积较小，机身以红色和白色为主，俗称“红白机”；另一种是欧美版，体积较大，机身以灰色为主，称为 Nintendo Entertainment System，简称NES。两套机器的主要差别是支持的视频制">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-25T13:30:01.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:08:00.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="Go 语言">
+<meta property="article:tag" content="NES">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        NES 模拟器实现指南（零）
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/02/" class="button" style="color: #808080;">
+    2018-02-25
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/NES/" class="button">NES</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%83%E5%A7%8B%EF%BC%8C%E4%B8%8A%E5%B8%9D%E6%9B%B0%EF%BC%9A%E5%AE%9C%E8%AF%BB-iNES-%E6%96%87%E4%BB%B6%E3%80%82"><span class="toc-text">元始，上帝曰：宜读 iNES 文件。</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Family Computer （ファミリーコンピュータ），缩写为 Famicom （ファミコン），是日本任天堂公司推出的一种第一代家用游戏主机，在国内常被称为红白机。红白机有两种，一种是日本版，体积较小，机身以红色和白色为主，俗称“红白机”；另一种是欧美版，体积较大，机身以灰色为主，称为 Nintendo Entertainment System，简称NES。两套机器的主要差别是支持的视频制式不一致，以及卡带的形状不同。在上世纪八十年代，红白机曾是世界上使用最广泛的游戏终端。自其从 1983 年发布至 1993 年停止维护，红白机将电子游戏带入各家各户，并推动了电子游戏最初的发展。</p>
+<p>尽管自红白机以来，科技已经进步了不少，我们能使用最新的技术制作出足以以假乱真的游戏画面，能够利用相当于当初 FC 卡带几百万倍的存储空间来存储游戏内容。但是，那个时代的 FC 游戏依然以其卓越的可玩性吸引着各个年龄的玩家。超级马里奥兄弟，洛克人，魂斗罗仍然是难以逾越的经典之作。</p>
+<p>当然，现代的操作系统以及硬件已经无法直接运行 FC 游戏。不过好在我们可以通过使用软件模拟 NES 主机的硬件来让游戏运行在现在的电脑上。这类软件便被称为<strong>模拟器</strong>。现有的 NES 模拟器中较为著名的有全平台的 <a target="_blank" rel="noopener" href="http://fceux.com/web/home.html">FCEUX</a>，Android 上的 Nesoid，以及 Windows 专供的 <a target="_blank" rel="noopener" href="http://virtuanes.s1.xrea.com/">VirtuaNES</a>。笔者一直使用的便是 VirtualNES。本文的目的便是实现一个简单的 NES 模拟器。笔者在演示时使用的语言为 Go 语言，当然读者若是想自行实现的话可以使用其擅长的任意语言进行。</p>
+<a id="more"></a>
+
+<h2 id="元始，上帝曰：宜读-iNES-文件。"><a href="#元始，上帝曰：宜读-iNES-文件。" class="headerlink" title="元始，上帝曰：宜读 iNES 文件。"></a>元始，上帝曰：宜读 iNES 文件。</h2><p>iNES 文件（拓展名 .nes，大小写均可）是 NES 游戏分发的事实标准。该文件标准的最初是由 <a target="_blank" rel="noopener" href="http://fms.komkon.org/">Marat Fayzullin</a> 为其模拟器 <a target="_blank" rel="noopener" href="http://fms.komkon.org/iNES/">iNES</a> 而开发的文件格式。要实现一个 NES 模拟器，我们要做的第一步就是读取 iNES 文件，并将之映射到内存中以备使用。</p>
+<p>我们首先要做的是创建 NES 文件的文件头结构体。NES 文件的前 16 个字节是文件头。其中：</p>
+<ol>
+<li><p>第 0 ~ 3 个字节指定了文件的格式，必须为：</p>
+<pre><code> 0 = 0x4E (N)
+ 1 = 0x45 (E)
+ 2 = 0x53 (S)
+ 3 = 0x1A (^Z)</code></pre>
+</li>
+</ol>
+<p>模拟器依靠这个确定文件的格式。</p>
+<ol start="2">
+<li><p>第 4 个字节指定了 PRG（程序） ROM 块的个数，PRG ROM 块每个大小为 16KB</p>
+</li>
+<li><p>第 5 个字节指定了 CHR（图块） ROM 块的个数，CHR ROM 块每个大小为 8 KB</p>
+</li>
+<li><p>第 6 个字节为指定卡带属性的字节。各个比特位的含义如下：</p>
+<pre><code>  0   -&gt; Mirror Type ( 1 为水平， 0 为垂直)
+  1   -&gt; 是否存在 battery-backed RAM ( 1 则为存在，映射到 $6000-$7FFF)
+  2   -&gt; 是否存在 trainer (同上，映射到 $7000-$71FF)
+  3   -&gt; 是否存在 VRAM
+  4-7 -&gt; Mapper Type 的低四位</code></pre>
+</li>
+<li><p>第 7 个字节还是指定卡带属性的字节。各个比特位的含义如下：</p>
+<pre><code>*0    -&gt; 卡带是否含有 VS-System
+*1-3  -&gt; 保留，但必须全为 0
+ 4-7  -&gt; Mapper Type 的高四位</code></pre>
+</li>
+<li><p>第 8 个字节指定了 RAM 块的个数，每块为 8KB，如果为 0 ，则假设只有一个 RAM 块。</p>
+</li>
+<li><p>*第 9 个字节指定了视频制式，如果其第 0 个比特值为 0，则为 PAL，否则为 NTSC 制式。</p>
+</li>
+<li><p>第 10-15 字节为保留区域，必须为 0</p>
+</li>
+</ol>
+<p>在上文中，暂不需要读取的区段笔者已经使用星号（*）标出。出现的词汇的含义会在以后的文章中逐步介绍。根据上文信息，现在我们即可写出文件头的结构体。如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> NESMagicMumber = <span class="number">0x1a53454e</span> <span class="comment">//&quot;NES^Z&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> NESFileHeader <span class="keyword">struct</span> &#123;</span><br><span class="line">    MagicNumber        <span class="keyword">uint32</span>    <span class="comment">// NES Magic Number,must be 0x1a53454e</span></span><br><span class="line">    PRGNum            <span class="keyword">byte</span>    <span class="comment">// PRG-ROM banks number</span></span><br><span class="line">    CHRNum            <span class="keyword">byte</span>    <span class="comment">// CHR-ROM banks number</span></span><br><span class="line">    Ctrl1            <span class="keyword">byte</span>    <span class="comment">// Control</span></span><br><span class="line">    Ctrl2            <span class="keyword">byte</span>    <span class="comment">// Control too</span></span><br><span class="line">    RAMNum            <span class="keyword">byte</span>    <span class="comment">// RAM number (8KB each)</span></span><br><span class="line">    _                [<span class="number">7</span>]<span class="keyword">byte</span> <span class="comment">// Empty bytes. Not used at this tume but MUST BE ALL ZEROS or games will not work.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>并写出相应的读取文件头片段：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">file,err := os.Open(path)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>,err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">defer</span> file.Close()</span><br><span class="line"></span><br><span class="line">    header := NESFileHeader&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read header</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err := binary.Read(file,binary.LittleEndian,&amp;header) ; err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> header.MagicNumber != NESMagicMumber &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span> , errors.New(<span class="string">&quot;Magic Number is Wrong.Invilid iNES file.&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>处理完文件之后我们需要一个暂时的 NES 卡带结构来将我们读取到的内容存储到内存中，我们只需要写出来目前需要读取的部分即可：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> Cartridge <span class="keyword">struct</span> &#123;</span><br><span class="line">    PRG     []<span class="keyword">byte</span></span><br><span class="line">    CHR     []<span class="keyword">byte</span></span><br><span class="line">    Mapper  <span class="keyword">int</span></span><br><span class="line">    Mirror  <span class="keyword">int</span></span><br><span class="line">    Battery <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>之后便是按照上面的说明读取各个变量</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   <span class="comment">// mapper type</span></span><br><span class="line">mapper1 := header.Control1 &gt;&gt; <span class="number">4</span></span><br><span class="line">mapper2 := header.Control2 &gt;&gt; <span class="number">4</span></span><br><span class="line">mapper := mapper1 | mapper2&lt;&lt;<span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// mirroring type</span></span><br><span class="line">mirror1 := header.Control1 &amp; <span class="number">1</span></span><br><span class="line">mirror2 := (header.Control1 &gt;&gt; <span class="number">3</span>) &amp; <span class="number">1</span></span><br><span class="line">mirror := mirror1 | mirror2&lt;&lt;<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// battery-backed RAM</span></span><br><span class="line">battery := (header.Control1 &gt;&gt; <span class="number">1</span>) &amp; <span class="number">1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>以及计算各个 ROM 块的个数，分配空间</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// read trainer if present (unused)</span></span><br><span class="line"><span class="keyword">if</span> header.Control1&amp;<span class="number">4</span> == <span class="number">4</span> &#123;</span><br><span class="line">    trainer := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">512</span>)</span><br><span class="line">    <span class="keyword">if</span> _, err := io.ReadFull(file, trainer); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// read prg-rom bank(s)</span></span><br><span class="line">prg := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="keyword">int</span>(header.NumPRG)*<span class="number">16384</span>)</span><br><span class="line"><span class="keyword">if</span> _, err := io.ReadFull(file, prg); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// read chr-rom bank(s)</span></span><br><span class="line">chr := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="keyword">int</span>(header.NumCHR)*<span class="number">8192</span>)</span><br><span class="line"><span class="keyword">if</span> _, err := io.ReadFull(file, chr); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// provide chr-rom/ram if not in file</span></span><br><span class="line"><span class="keyword">if</span> header.NumCHR == <span class="number">0</span> &#123;</span><br><span class="line">    chr = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">8192</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后将这些代码片段一封装为函数，即可完成读取 iNES 文件这一操作。十分简单。</p>
+<p>本段的全部代码可以在<a target="_blank" rel="noopener" href="https://github.com/kuso-kodo/kuso-NES/tree/3a0f0fdc2ab83cdda2514fb72f9c0dbf8e52a455">这里</a>找到。</p>
+<p>Reference:</p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="http://nesdev.com/neshdr20.txt">iNES Header/Format Information File</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://fms.komkon.org/">Marat Fayzullin</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Nintendo_Entertainment_System">Wikipedia: Nintendo Entertainment System</a></p>
+</li>
+</ol>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/NES/" class="post-cats__link button">NES</a>
+    
+    
+        <a href="/tags/Go-%E8%AF%AD%E8%A8%80/" class="post-tags__link button"># Go 语言</a>
+    
+        <a href="/tags/NES/" class="post-tags__link button"># NES</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

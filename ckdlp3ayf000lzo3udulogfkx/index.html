@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>详解 C 语言链表（实践篇） | Nameless Blog</title>
+    
+        <meta name="keywords" content="C">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="在基础篇中，笔者介绍了一些链表的基本操作。在本文中，笔者整理了几个有关链表的问题供大家练习。练习的难度是递增的。前几道非常简单，后面就会愈加困难。答案会附在题目的后面。 注意：仅仅用眼睛看答案不会提升自己的水平，只有自己亲手实现，才算真正的学到了知识。在看答案之前，无论你自己有没有成功实现，都请务必确保你真的认真思考了。 优秀的程序员应该是能够将数据结构可视化的，因此他们能够很好的理解代码运行时内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解 C 语言链表（实践篇）">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayf000lzo3udulogfkx/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="在基础篇中，笔者介绍了一些链表的基本操作。在本文中，笔者整理了几个有关链表的问题供大家练习。练习的难度是递增的。前几道非常简单，后面就会愈加困难。答案会附在题目的后面。 注意：仅仅用眼睛看答案不会提升自己的水平，只有自己亲手实现，才算真正的学到了知识。在看答案之前，无论你自己有没有成功实现，都请务必确保你真的认真思考了。 优秀的程序员应该是能够将数据结构可视化的，因此他们能够很好的理解代码运行时内">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/Reverse.png">
+<meta property="article:published_time" content="2018-03-16T13:22:53.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:07:54.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/Reverse.png">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        详解 C 语言链表（实践篇）
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-16
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/C/" class="button">C</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%A6%E5%AE%9A"><span class="toc-text">约定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Count"><span class="toc-text">1. Count()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-GetNth"><span class="toc-text">2. GetNth()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-DeleteList"><span class="toc-text">3. DeleteList()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-SortedInsert"><span class="toc-text">4. SortedInsert()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-InsertSort"><span class="toc-text">5. InsertSort()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-MergeSort"><span class="toc-text">6. MergeSort()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Reverse"><span class="toc-text">7. Reverse()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%94%E6%A1%88"><span class="toc-text">答案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Count-1"><span class="toc-text">1. Count()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-GetNth-1"><span class="toc-text">2. GetNth()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-DeleteList-1"><span class="toc-text">3. DeleteList()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-SortedInsert-1"><span class="toc-text">4. SortedInsert()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-InsertSort-1"><span class="toc-text">5. InsertSort()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-MergeSort-1"><span class="toc-text">6. MergeSort()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Reverse-1"><span class="toc-text">7. Reverse()</span></a></li></ol></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p>在<a target="_blank" rel="noopener" href="https://kuso-kodo.github.io/2018/03/14/Linked-List-Basic/">基础篇</a>中，笔者介绍了一些链表的基本操作。在本文中，笔者整理了几个有关链表的问题供大家练习。练习的难度是递增的。前几道非常简单，后面就会愈加困难。答案会附在题目的后面。</p>
+<p>注意：<strong>仅仅用眼睛看答案不会提升自己的水平，只有自己亲手实现，才算真正的学到了知识。在看答案之前，无论你自己有没有成功实现，都请务必确保你真的认真思考了。</strong></p>
+<p>优秀的程序员应该是能够将数据结构可视化的，因此他们能够很好的理解代码运行时内存的变化。链表的规整使得它很适合拿来做基本的可视化训练。在解决下面这些问题时，你可以尝试在纸上画出链表的结构进行模拟，最终使用代码将之表达起来。</p>
+<a id="more"></a>
+
+<h2 id="约定"><a href="#约定" class="headerlink" title="约定"></a>约定</h2><p>在下面的问题中，使用的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span>             data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>*    <span class="title">next</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">node</span>  <span class="title">node_t</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">nodeptr_t</span>;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>按照要求实现如下函数。函数的声明已给出。</p>
+<h3 id="1-Count"><a href="#1-Count" class="headerlink" title="1. Count()"></a>1. Count()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Count - 返回给定对象的出现次数</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @head:       查找的链表的头指针</span></span><br><span class="line"><span class="comment"> * @value:      需要查找的值</span></span><br><span class="line"><span class="comment"> */</span> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Count</span><span class="params">(<span class="keyword">nodeptr_t</span> head, <span class="keyword">int</span> value)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-GetNth"><a href="#2-GetNth" class="headerlink" title="2. GetNth()"></a>2. GetNth()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * GetNth - 返回给定链表在给定索引处的值，如果超过链表的长度，应该返回一个错误代码。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @head:       给定的链表</span></span><br><span class="line"><span class="comment"> * @index:      索引</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GetNth</span><span class="params">(<span class="keyword">nodeptr_t</span> head, <span class="keyword">int</span> index)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-DeleteList"><a href="#3-DeleteList" class="headerlink" title="3. DeleteList()"></a>3. DeleteList()</h3> <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * DeleteList - 删除链表并置头指针为 NULL</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * @headRef:      指向链表头指针的指针。</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DeleteList</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-SortedInsert"><a href="#4-SortedInsert" class="headerlink" title="4. SortedInsert()"></a>4. SortedInsert()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * SortedInsert - 像已排序的链表中插入新节点</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @headRef:    已排序的链表</span></span><br><span class="line"><span class="comment"> * @newNode:    新的节点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SortedInsert</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef, <span class="keyword">nodeptr_t</span> *newNode)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-InsertSort"><a href="#5-InsertSort" class="headerlink" title="5. InsertSort()"></a>5. InsertSort()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * InsertSort - 链表的插入排序</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @headRef:    链表的头指针的指针</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InsertSort</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-MergeSort"><a href="#6-MergeSort" class="headerlink" title="6. MergeSort()"></a>6. MergeSort()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * InsertSort - 链表的插入排序</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @headRef:    链表的头指针的指针</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MergetSort</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="7-Reverse"><a href="#7-Reverse" class="headerlink" title="7. Reverse()"></a>7. Reverse()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * InsertSort - 链表的插入排序</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @headRef:    链表的头指针的指针</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Reverse</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span></span></span><br><span class="line"><span class="function"><span class="comment">/**</span></span></span><br><span class="line"><span class="function"><span class="comment"> * 楼上的递归版本</span></span></span><br><span class="line"><span class="function"><span class="comment"> */</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ReverseRecursive</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>提示：</p>
+<p><img src="https://coding.net/u/name1e5s/p/pic/git/raw/master/Reverse.png"></p>
+<p>其中红色为最初的链表，绿色为最终的结果。</p>
+<h2 id="答案"><a href="#答案" class="headerlink" title="答案"></a>答案</h2><h3 id="1-Count-1"><a href="#1-Count-1" class="headerlink" title="1. Count()"></a>1. Count()</h3><p>本函数的实现极其简单。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Count</span><span class="params">(<span class="keyword">nodeptr_t</span> head, <span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (current = head; current != <span class="literal">NULL</span>;  current = current-&gt;next) &#123;</span><br><span class="line">        <span class="keyword">if</span>(current-&gt;data == searchFor)</span><br><span class="line">            count++;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-GetNth-1"><a href="#2-GetNth-1" class="headerlink" title="2. GetNth()"></a>2. GetNth()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GetNth</span><span class="params">(<span class="keyword">nodeptr_t</span> head, <span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = head;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (current != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span>(count == index)</span><br><span class="line">            <span class="keyword">return</span>(current-&gt;data);</span><br><span class="line">        count++;</span><br><span class="line">        current = current-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">    assert(<span class="number">0</span>); <span class="comment">// 报错 </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-DeleteList-1"><a href="#3-DeleteList-1" class="headerlink" title="3. DeleteList()"></a>3. DeleteList()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DeleteList</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = *headRef;</span><br><span class="line">    <span class="keyword">while</span> (current != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        next = current-&gt;next;</span><br><span class="line">        <span class="built_in">free</span>(current);</span><br><span class="line">        current = next;</span><br><span class="line">    &#125;</span><br><span class="line">    *headRef = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-SortedInsert-1"><a href="#4-SortedInsert-1" class="headerlink" title="4. SortedInsert()"></a>4. SortedInsert()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SortedInsert</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef, <span class="keyword">nodeptr_t</span> *newNode)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 处理特殊情况</span></span><br><span class="line">    <span class="keyword">if</span> (*(headRef) == <span class="literal">NULL</span> || (*headRef)-&gt;data &gt;=   newNode-&gt;data) &#123;</span><br><span class="line">        newNode-&gt;next = *headRef;</span><br><span class="line">        *headRef = newNode;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">nodeptr_t</span> current = *headRef;</span><br><span class="line">        <span class="keyword">while</span> (current-&gt;next!=<span class="literal">NULL</span> &amp;&amp; current-&gt;next-&gt;data&lt;newNode-&gt;data) &#123;</span><br><span class="line">            current = current-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        newNode-&gt;next = current-&gt;next;</span><br><span class="line">        current-&gt;next = newNode;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-InsertSort-1"><a href="#5-InsertSort-1" class="headerlink" title="5. InsertSort()"></a>5. InsertSort()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InsertSort</span><span class="params">(<span class="keyword">nodeptr_t</span> *headRef)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> result = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = *headRef;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> next;</span><br><span class="line">    <span class="keyword">while</span> (current!=<span class="literal">NULL</span>) &#123;</span><br><span class="line">        next = current-&gt;next; <span class="comment">// 此处有技巧</span></span><br><span class="line">        SortedInsert(&amp;result, current);</span><br><span class="line">        current = next;</span><br><span class="line">    &#125;   </span><br><span class="line">    *headRef = result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-MergeSort-1"><a href="#6-MergeSort-1" class="headerlink" title="6. MergeSort()"></a>6. MergeSort()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MergeSort</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> head = *headRef;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> a;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> b;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((head == <span class="literal">NULL</span>) || (head-&gt;next == <span class="literal">NULL</span>)) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    FrontBackSplit(head, &amp;a, &amp;b);</span><br><span class="line">    MergeSort(&amp;a);</span><br><span class="line">    MergeSort(&amp;b);</span><br><span class="line">    *headRef = SortedMerge(a, b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>引用的子函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * FrontBackSplit - 将链表对半分为两份</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @source:     要分解的链表</span></span><br><span class="line"><span class="comment"> * @frontRef:   分解后的第一个链表</span></span><br><span class="line"><span class="comment"> * @backRef:    分解后的第二个链表</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">FrontBackSplit</span><span class="params">(<span class="keyword">nodeptr_t</span> source, <span class="keyword">nodeptr_t</span>* frontRef, <span class="keyword">nodeptr_t</span>* backRef)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len = Length(source);</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = source;</span><br><span class="line">    <span class="keyword">if</span> (len &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        *frontRef = source;</span><br><span class="line">        *backRef = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> hopCount = (len<span class="number">-1</span>)/<span class="number">2</span>; <span class="comment">//(figured these with a few drawings)</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i&lt;hopCount; i++) &#123;</span><br><span class="line">            current = current-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        *frontRef = source;</span><br><span class="line">        *backRef = current-&gt;next;</span><br><span class="line">        current-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * SortedMerge - 将排序好的链表合并在一起</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @a: 要合并的链表</span></span><br><span class="line"><span class="comment"> * @b: 也是要合并的链表</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">SortedMerge</span><span class="params">(<span class="keyword">nodeptr_t</span> a, <span class="keyword">nodeptr_t</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> result = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (a==<span class="literal">NULL</span>) <span class="keyword">return</span>(b);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (b==<span class="literal">NULL</span>) <span class="keyword">return</span>(a);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (a-&gt;data &lt;= b-&gt;data) &#123;</span><br><span class="line">        result = a;</span><br><span class="line">        result-&gt;next = SortedMerge(a-&gt;next, b);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        result = b;</span><br><span class="line">        result-&gt;next = SortedMerge(a, b-&gt;next);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>(result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-Reverse-1"><a href="#7-Reverse-1" class="headerlink" title="7. Reverse()"></a>7. Reverse()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Reverse</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> result = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = *headRef;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> next;</span><br><span class="line">    <span class="keyword">while</span> (current != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        next = current-&gt;next; <span class="comment">// 此处加了特技</span></span><br><span class="line">        current-&gt;next = result;</span><br><span class="line">        result = current;</span><br><span class="line">        current = next;</span><br><span class="line">    &#125;</span><br><span class="line">    *headRef = result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RecursiveReverse</span><span class="params">(<span class="keyword">nodeptr_t</span>* headRef)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> first;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> rest;</span><br><span class="line">    <span class="keyword">if</span> (*headRef == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    first = *headRef;</span><br><span class="line">    rest = first-&gt;next;</span><br><span class="line">    <span class="keyword">if</span> (rest == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    RecursiveReverse(&amp;rest);</span><br><span class="line">    first-&gt;next-&gt;next = first;</span><br><span class="line">    first-&gt;next = <span class="literal">NULL</span>; <span class="comment">// 这里，最好画一下</span></span><br><span class="line">    *headRef = rest;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/C/" class="post-cats__link button">C</a>
+    
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

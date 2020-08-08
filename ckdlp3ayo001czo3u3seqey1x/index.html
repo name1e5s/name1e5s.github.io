@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>手撸调试器(1) —— 载入 inferior | Nameless Blog</title>
+    
+        <meta name="keywords" content="调试器">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="近几天放假无事可做，便开始翻 Linux 中国的微信公众号找乐子，在他们的推送里，我发现了这篇文章，看完后有了想要自己写一个玩具调试器玩玩的想法。于是就有了这个系列的坑文章。 在正式开始写调试器之前，我们先要了解下 inferior 的概念，在 gdb 里面，inferior 表示的是被调试的东西。它可能是一个进程，可能是运行在一个虚拟机上的内核，也可能是运行在通过各种方式与这台计算机连接起来的远">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手撸调试器(1) —— 载入 inferior">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayo001czo3u3seqey1x/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="近几天放假无事可做，便开始翻 Linux 中国的微信公众号找乐子，在他们的推送里，我发现了这篇文章，看完后有了想要自己写一个玩具调试器玩玩的想法。于是就有了这个系列的坑文章。 在正式开始写调试器之前，我们先要了解下 inferior 的概念，在 gdb 里面，inferior 表示的是被调试的东西。它可能是一个进程，可能是运行在一个虚拟机上的内核，也可能是运行在通过各种方式与这台计算机连接起来的远">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/07/30/5b5eb4ee70165.jpg">
+<meta property="article:published_time" content="2018-07-30T08:18:50.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:07:58.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="调试器">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2018/07/30/5b5eb4ee70165.jpg">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        手撸调试器(1) —— 载入 inferior
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/07/" class="button" style="color: #808080;">
+    2018-07-30
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/C/" class="button">C</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%BD%E5%85%A5-inferior"><span class="toc-text">载入 inferior</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ptrace"><span class="toc-text">ptrace()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fork"><span class="toc-text">fork()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-text">实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AF%B9%E5%AD%90%E8%BF%9B%E7%A8%8B%E8%B4%9F%E2%99%82%E8%B4%A3"><span class="toc-text">如何对子进程负♂责</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p>近几天放假无事可做，便开始翻 Linux 中国的微信公众号找乐子，在他们的推送里，我发现了这篇<a target="_blank" rel="noopener" href="https://linux.cn/article-9849-1.html">文章</a>，看完后有了想要自己写一个玩具调试器玩玩的想法。于是就有了这个系列的<del>坑</del>文章。</p>
+<p>在正式开始写调试器之前，我们先要了解下 <code>inferior</code> 的概念，在 <code>gdb</code> 里面，<code>inferior</code> 表示的是被调试的东西。它可能是一个进程，可能是运行在一个虚拟机上的内核，也可能是运行在通过各种方式与这台计算机连接起来的远程设备上的进程。我们要写的调试器的作用，就是帮助用户检测程序的错误。我们在本系列文章中实现的调试器大致支持的功能有如下几个：设置断点、暂挂已启动的程序、单步执行代码和检查变量的内容 —— 这几个功能也是我在使用 <code>gdb</code> 时候常用的几个初级功能。</p>
+<a id="more"></a>
+
+<h3 id="载入-inferior"><a href="#载入-inferior" class="headerlink" title="载入 inferior"></a>载入 inferior</h3><p>要实现一个调试器，我们首先要做的就是载入 <code>inferior</code>，这里我们主要是使用 <code>linux</code> 提供的 <code>execv()</code> 来实现这一功能，该函数的<a target="_blank" rel="noopener" href="https://linux.die.net/man/3/execv">声明</a>如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">execv</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path, <span class="keyword">char</span> *<span class="keyword">const</span> argv[])</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>path</code> 是我们要调试的程序的路径，<code>argv</code> 是附加进去的命令行选项。</p>
+<h4 id="ptrace"><a href="#ptrace" class="headerlink" title="ptrace()"></a>ptrace()</h4><p>载入 <code>inferior</code> 时，我们还需要使用<a target="_blank" rel="noopener" href="https://linux.die.net/man/2/ptrace"> <code>ptrace</code></a> 函数来表明，我们创建的这个进程是可以被调试的，我们先来看一下 <code>ptrace</code> 函数的声明：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">ptrace</span><span class="params">(<span class="keyword">enum</span> __ptrace_request request, <span class="keyword">pid_t</span> pid, <span class="keyword">void</span> *addr, <span class="keyword">void</span> *data)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>通过这个函数，我们可以实现很多调试功能，甚至可以说我们整个编译器都是构建在其上的。我们在以后也会遇到很多次这个函数调用，但是现在我们需要的仅仅是把我们的 <code>inferior</code> 设置为可以被父进程调试的，这时我们只需要将 <code>__ptrace_request request</code> 设为 <code>PTRACE_TRACEME</code>，其余的参数我们暂时可以不管，只需要设为 <code>0</code> 即可。为了在最开始就可以调试我们的程序，我们需要在 <code>inferior</code> 运行之前就执行 <code>ptrace</code>，还需要让我们的调试器和 <code>inferior</code> 之间为父子进程关系，这时候我们就需要  <code>fork</code> 来解决这一问题。</p>
+<h4 id="fork"><a href="#fork" class="headerlink" title="fork()"></a>fork()</h4><p><code>fork()</code>  以及 <code>exec()</code> 这两个函数家族是在符合 <code>POSIX</code> 标准的系统上创建新进程的最重要的函数。<code>fork</code> 的作用是克隆进程，也就是将原先的一个进程再克隆出一个来，克隆出的这个进程就是原进程的子进程，这个子进程和其他的进程没有什么区别，同样拥有自己的独立的地址空间。克隆之后父子进程如同分道扬镳。如下图：</p>
+<p><img src="https://i.loli.net/2018/07/30/5b5eb4ee70165.jpg" alt="5b5eb4ee70165"></p>
+<p><code>fork</code> 之后父子就开始走不同的路线。</p>
+<p><code>fork</code> 执行的返回值有三种可能：</p>
+<ul>
+<li>该进程为父进程时，返回子进程的 <code>pid</code>  </li>
+<li>该进程为子进程时，返回 <code>0</code>  </li>
+<li><code>fork</code>执行失败，返回 <code>-1</code></li>
+</ul>
+<p>因此我们可以根据返回值来判断是父进程还是子进程。</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>根据前面的几个系统提供的函数，我们就能写出来装载 <code>inferior</code> 的函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setup_inferior</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path, <span class="keyword">char</span> **argv)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">kuso_exec_inferior</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>*  inferior_path,</span></span></span><br><span class="line"><span class="function"><span class="params">                              <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> result = fork();</span><br><span class="line">    <span class="keyword">switch</span> (result) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>: <span class="comment">// Now I am the son.</span></span><br><span class="line">              setup_inferior(inferior_path, argv);</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">-1</span>: <span class="comment">// Error</span></span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>: <span class="comment">// I am your father.</span></span><br><span class="line">              loop();</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setup_inferior</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    ptrace(PTRACE_TRACEME, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    execv(path, argv);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(;;); <span class="comment">// Loop forever...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>辅以相应的驱动程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *argv[] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    kuso_exec_inferior(<span class="string">&quot;./fuck&quot;</span>,argv);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>即可对 <code>./fuck</code> 这个程序进行调试。我们的程序正如预期的一样，陷入死循环，大致原理是这样的，<code>ptrace</code> 的手册里有如下说明：</p>
+<blockquote>
+<p>  While being traced, the tracee will stop each time a signal is<br>       delivered, even if the signal is being ignored.  (An exception is<br>       <strong>SIGKILL</strong>, which has its usual effect.)  The tracer will be notified at<br>       its next call to <a target="_blank" rel="noopener" href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a> (or one of the related “wait” system<br>       calls); that call will return a <em>status</em> value containing information<br>       that indicates the cause of the stop in the tracee.  While the tracee<br>       is stopped, the tracer can use various ptrace requests to inspect and<br>       modify the tracee.  The tracer then causes the tracee to continue,<br>       optionally ignoring the delivered signal (or even delivering a<br>       different signal instead).</p>
+<pre><code>   If the **PTRACE_O_TRACEEXEC** option is not in effect, all successful
+   calls to [execve(2)](http://man7.org/linux/man-pages/man2/execve.2.html) by the traced process will cause it to be sent a
+   **SIGTRAP** signal, giving the parent a chance to gain control before the new progra</code></pre>
+</blockquote>
+<p>根据这个说明，我们可以推测死循环时候发生了什么：</p>
+<ol>
+<li><p><code>inferior</code> 收到了 <code>SIGTRAP</code> 信号，并停下等待调试器做出回应</p>
+</li>
+<li><p>调试器沉浸在死循环中毛都没做</p>
+</li>
+</ol>
+<p>现在我们了解了，父进程要被对调♂试的子进程负♂责。因此我们需要让父进程在子进程收到信号时做点什么。</p>
+<h3 id="如何对子进程负♂责"><a href="#如何对子进程负♂责" class="headerlink" title="如何对子进程负♂责"></a>如何对子进程负♂责</h3><p>我们可以使用 <code>waitpid</code> 系统调用来获取子进程的状态并以此进行一些处理。该函数的声明如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">pid_t</span> <span class="title">waitpid</span><span class="params">(<span class="keyword">pid_t</span> pid, <span class="keyword">int</span> *status, <span class="keyword">int</span> options)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中我们要用到的是前两个参数，第一个是我们在调试的进程的 <code>pid</code>，第二个是该函数要写入返回值的位置。第三个我们暂时不需要，填一个 <code>0</code> 即可。返回的数字人眼基本看不出来什么信息，但是好在我们有如下几个宏来帮助判断状态：</p>
+<table>
+<thead>
+<tr>
+<th>宏名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WIFEXITED</td>
+<td>判断进程是否退出</td>
+</tr>
+<tr>
+<td>WIFSTOPPED</td>
+<td>判断进程是否停止</td>
+</tr>
+<tr>
+<td>WSTOPSIG</td>
+<td>返回导致进程停止的信号</td>
+</tr>
+</tbody></table>
+<p>更多的宏请去手册内查看。</p>
+<p>利用这几个宏，我们就可以对子进程做一些简单的操♂作了，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setup_inferior</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path, <span class="keyword">char</span> **argv)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">attach_inferior</span><span class="params">(<span class="keyword">pid_t</span> inferior_pid)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">kuso_exec_inferior</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>*  inferior_path,</span></span></span><br><span class="line"><span class="function"><span class="params">                              <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">pid_t</span> result = fork();</span><br><span class="line">    <span class="keyword">switch</span> (result) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">              setup_inferior(inferior_path, argv);</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">-1</span>:</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">-           loop();</span><br><span class="line">+              attach_inferior(result);</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setup_inferior</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    ptrace(PTRACE_TRACEME, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    execv(path, argv);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">attach_inferior</span><span class="params">(<span class="keyword">pid_t</span> inferior_pid)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(;;) &#123;</span><br><span class="line">        <span class="keyword">int</span> status;</span><br><span class="line">        waitpid(inferior_pid, &amp;status, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (WIFSTOPPED(status) &amp;&amp; WSTOPSIG(status) == SIGTRAP) &#123;</span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;SIGTRAP Found...\n&quot;</span>);</span><br><span class="line">            ptrace(PTRACE_CONT, inferior_pid, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (WIFEXITED(status)) &#123;</span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;Inferior exited...\n&quot;</span>);</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样再次执行我们的程序，就可以看到对应的输出了。</p>
+<p>现在这个调试器只是简单的实现了加载 <code>inferior</code> 的功能，仍有很多功能没有实现。我们会在以后的文章<del>如果有的话</del>里一步一步的实现完整。</p>
+<p>本文的完整代码在<a target="_blank" rel="noopener" href="https://github.com/kuso-kodo/kuso_dbg/tree/1773a6662345479dd081ed74edc4ef473e91e4f8">这里</a>。</p>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/C/" class="post-cats__link button">C</a>
+    
+    
+        <a href="/tags/%E8%B0%83%E8%AF%95%E5%99%A8/" class="post-tags__link button"># 调试器</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

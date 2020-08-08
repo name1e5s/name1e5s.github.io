@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>归档：2018 | Nameless Blog</title>
+    
+
+    <!-- OpenGraph -->
+     
+        <meta property="og:type" content="website">
+<meta property="og:title" content="Nameless Blog">
+<meta property="og:url" content="https://blog.name1e5s.com/archives/2018/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Name1e5s">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+    <div class="cover">
+        <div class="cover__logo">
+            
+                <h1>Name1e5s</h1>
+            
+        </div>
+        
+            <div class="cover__intro">
+                <p>20 岁，是学生</p>
+ 
+            </div>
+        
+    </div>
+
+            <main class='main'>
+    
+		
+    <div class="posts">
+        
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ay60007zo3ueoq8hxgv/" class="index-title">
+        <h2 class="post-card__title">
+            CS:APP Lab 3 解题报告 - 64位
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>CSAPP 的 Lab 3 在第三版之前都是所谓的 Buffer Lab，而 CSAPP 第三版的配套 Lab 3 则是 Attack Lab。因为我们学校新开的计算机系统基础课可能要以此为实验，故再来重新感受一番。该 Lab 的实验流程与 Buffer Lab 基本相同，我们直接开始。本次实验笔者使用的环境为 Ubuntu 18.04。</p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/09/" class="button" style="color: #808080;">
+    2018-09-28
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/CSAPP/" class="button">CSAPP</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/CSAPP/" class="post-tags__link button"># CSAPP</a>
+    
+</div> 
+
+<a href="/ckdlp3ay60007zo3ueoq8hxgv/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ayt001pzo3u2xysdhtk/" class="index-title">
+        <h2 class="post-card__title">
+            数字逻辑 - 组合电路：小型设计 笔记
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p> 这一章介绍的是设计小的组合电路时候的设计方法。</p>
+<h3 id="信号命名标准"><a href="#信号命名标准" class="headerlink" title="信号命名标准"></a>信号命名标准</h3><p>对于一个信号，如果逻辑 1 表示有效，逻辑 0 表示无效，不活跃或者禁止的话，我们称此信号为高电平有效的，通常我们使用不带任何前缀或者后缀的名称来表示一个高电平有效的信号；如果逻辑 0 表示有效，逻辑 1 表示无效，不活跃或者禁止的话，该信号就是低电平有效的，我们一般使用带有<u>下划线</u>的名称来表示低电平有效信号。</p>
+<p>对于单个信号，我们通常使用小写来表示，对于多个则一般用大写字母。比如 <code>x,X, _x , _X</code>分别定义了单个/多个 高电平/低电平信号。</p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/08/" class="button" style="color: #808080;">
+    2018-08-09
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" class="button">数字逻辑</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91%E8%AE%BE%E8%AE%A1%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90/" class="post-tags__link button"># 数字逻辑设计与计算机组成</a>
+    
+</div> 
+
+<a href="/ckdlp3ayt001pzo3u2xysdhtk/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ayo001czo3u3seqey1x/" class="index-title">
+        <h2 class="post-card__title">
+            手撸调试器(1) —— 载入 inferior
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>近几天放假无事可做，便开始翻 Linux 中国的微信公众号找乐子，在他们的推送里，我发现了这篇<a target="_blank" rel="noopener" href="https://linux.cn/article-9849-1.html">文章</a>，看完后有了想要自己写一个玩具调试器玩玩的想法。于是就有了这个系列的<del>坑</del>文章。</p>
+<p>在正式开始写调试器之前，我们先要了解下 <code>inferior</code> 的概念，在 <code>gdb</code> 里面，<code>inferior</code> 表示的是被调试的东西。它可能是一个进程，可能是运行在一个虚拟机上的内核，也可能是运行在通过各种方式与这台计算机连接起来的远程设备上的进程。我们要写的调试器的作用，就是帮助用户检测程序的错误。我们在本系列文章中实现的调试器大致支持的功能有如下几个：设置断点、暂挂已启动的程序、单步执行代码和检查变量的内容 —— 这几个功能也是我在使用 <code>gdb</code> 时候常用的几个初级功能。</p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/07/" class="button" style="color: #808080;">
+    2018-07-30
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/C/" class="button">C</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/%E8%B0%83%E8%AF%95%E5%99%A8/" class="post-tags__link button"># 调试器</a>
+    
+</div> 
+
+<a href="/ckdlp3ayo001czo3u3seqey1x/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ayp001fzo3u68ozgrl0/" class="index-title">
+        <h2 class="post-card__title">
+            当你 malloc(0) 时会发生什么
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>故事要从今天中午一位同学提到了这个问题开始……</p>
+<p><img src="https://i.loli.net/2018/07/24/5b572595b42f1.jpg" alt="5b572595b42f1"></p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/07/" class="button" style="color: #808080;">
+    2018-07-24
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/C/" class="button">C</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+        <a href="/tags/%E8%B6%A3%E5%91%B3%E9%97%AE%E9%A2%98/" class="post-tags__link button"># 趣味问题</a>
+    
+</div> 
+
+<a href="/ckdlp3ayp001fzo3u68ozgrl0/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ayk0010zo3u3p4yfpvy/" class="index-title">
+        <h2 class="post-card__title">
+            使用正则表达式匹配 3 的倍数
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>北邮的考试周，与别处是不同的。都是近两周的时间，经常穿插着空挡，预备着可以随时抱佛脚。复习的人，傍午傍晚复习崩溃，每每花四十分钟，拿出手机 —— 这是十年前的事情，现在根本没有这么多时间。 ——  在教室做着，热热的玩了休息；倘肯多花一小时，便可以水一水群，或者看一看知乎，做精神娱乐了，如果歇到八九个小时，那就能回一趟宿舍，但这些学生，多是害怕考试挂科的，大抵没有这样阔绰。只有做学霸的，才踱进教室西边的宿舍里，拿起电脑，慢慢地玩游戏。</p>
+<p>我从十七岁起，便在校内的计院当学渣。在考试周周末下午歇息时，看到了一个有趣的<a target="_blank" rel="noopener" href="https://alf.nu/RegexGolf">网站</a>。便顶着要挂科的压力，好好地把玩了一番这个网站。网站的问题大抵是很常规的正则表达式的问题，但其中的 Triples 很有意思，题意大概如下：</p>
+<blockquote>
+<p>使用正则表达式匹配出全部 3 的倍数。</p>
+</blockquote>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/07/" class="button" style="color: #808080;">
+    2018-07-04
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/%E8%B6%A3%E5%91%B3%E9%97%AE%E9%A2%98/" class="button">趣味问题</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/%E6%9D%82%E8%B0%88/" class="post-tags__link button"># 杂谈</a>
+    
+</div> 
+
+<a href="/ckdlp3ayk0010zo3u3p4yfpvy/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ay70008zo3udm4rfp6i/" class="index-title">
+        <h2 class="post-card__title">
+            CS:APP Lab 4 解题报告
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>CSAPP 的第四章《处理器体系结构》大多讲述的是 CPU 的实现，比较偏硬件。大约也是这个原因，很多高校在选用此教材讲述计算机系统导论课程时会直接跳过这一章。与之配套的 Lab 4，Architecture Lab 则更是无人问津。我趁着考完期中的空闲时间，花了近一天时间啃了下第四章，并顺便做了个下这个 Architecture Lab。</p>
+<p>Architecture Lab 的主要目标是修改一个 <code>Y86-64</code> 汇编程序写就的函数 <code>ncopy</code> 以及我们使用的流水线 CPU 的 HCL 代码，使之在我们的 <code>Y86-64</code> 处理器上的效率尽量高（CPE(<strong>C</strong>locks <strong>P</strong>er <strong>E</strong>lement) 尽量小）。在这个任务之前，有两个小的任务来帮助我们熟悉相关的操作。</p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/05/" class="button" style="color: #808080;">
+    2018-05-13
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/CSAPP/" class="button">CSAPP</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/CSAPP/" class="post-tags__link button"># CSAPP</a>
+    
+</div> 
+
+<a href="/ckdlp3ay70008zo3udm4rfp6i/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ayj000yzo3u5s17fodk/" class="index-title">
+        <h2 class="post-card__title">
+            详解并查集（基础篇）
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>并查集是一种树型的数据结构，用于处理一些不相交集（Disjoint Sets）的合并及查询问题。不相交集，顾名思义，就是交集为空集的一些集合。比如集合 {1,3,5} 和集合 {2,4,6} 就是不相交集。 {2,3,5} 和 {1,3,5} 就不是，因为他们的交集不是空集。该数据结构由Bernard A. Galler和Michael J. Fischer于1964年提出。</p>
+<p>对于并查集，主要有如下操作：</p>
+<ol>
+<li><p>合并两个集合（“并”）</p>
+</li>
+<li><p>判断两个元素是否属于同一个集合。（“查”）</p>
+</li>
+</ol>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/04/" class="button" style="color: #808080;">
+    2018-04-04
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="button">数据结构</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+
+<a href="/ckdlp3ayj000yzo3u5s17fodk/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ay80009zo3uaarx2ous/" class="index-title">
+        <h2 class="post-card__title">
+            使用 C/C++ 模拟 defer 关键字
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <blockquote>
+<p>笔者在翻译完 <a target="_blank" rel="noopener" href="https://linux.cn/article-9268-1.html">这篇文章</a> 以及同系列的下一篇文章（尚未发布…）后，受到了 ESR 大神的鼓舞，遂决定在寒假学习一下 Go 语言。在学习 Go 语言的过程中,觉着这语言和之前学到的 C/C++ ，Scheme 相比有着无法比较的简洁感。笔者尤其喜欢 <code>defer</code> 这一关键字的设计。于是就在今天尝试使用 C/C++ 模拟了下 <code>defer</code> 关键字。</p>
+</blockquote>
+<blockquote>
+<pre><code>                                                  ---- 某咸鱼的碎碎念</code></pre>
+</blockquote>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/04/" class="button" style="color: #808080;">
+    2018-04-01
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/Go/" class="button">Go</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/Go-%E8%AF%AD%E8%A8%80/" class="post-tags__link button"># Go 语言</a>
+    
+</div> 
+
+<a href="/ckdlp3ay80009zo3uaarx2ous/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ayb000dzo3u3rfx2wfw/" class="index-title">
+        <h2 class="post-card__title">
+            详解二叉堆（基础篇）
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>堆(heap)，又称为优先队列(priority queue)。尽管名为优先队列，但堆并不是队列。在队列中，我们可以进行的操作是向队列中添加元素和按照元素进入队列的选后顺序取出元素。而在堆中，我们不是按照元素进入队列的先后顺序，而是按照元素的优先级取出元素。</p>
+<p>Linux 内核中的调度器会根据各个进程的优先级对程序的执行进行调度。在操作系统运行时，通常会有很多个不同的进程，优先级各不相同。在调度器的作用下，优先级高的进程被有限执行，优先级靠后的就只能等待。堆是实现这种调度器的一种很合适的数据结构（顺便提一下，现在的 Linux 内核的调度器使用的是基于红黑树的 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Completely_Fair_Scheduler">CFS</a> ，笔者以后会专门介绍）。</p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-29
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="button">数据结构</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+
+<a href="/ckdlp3ayb000dzo3u3rfx2wfw/" class="post-card__link">Link</a>
+                </div>
+            
+                <div class='post-card content-card'>
+                    <div class="post-card__header">
+    
+         
+    
+</div>
+<div class="post-card__content">
+    <a href="/ckdlp3ay20003zo3ua2xmdxlz/" class="index-title">
+        <h2 class="post-card__title">
+            详解 AVL 树（基础篇）
+        </h2>
+    </a>
+    <div class="post-card__descrption">
+        
+            <div class="md-content">
+                
+                    <p>AVL 树是一种平衡二叉搜索树，得名于其发明者的名字（ Adelson-Velskii 以及 Landis）。（可见名字长的好处，命名都能多占一个字母出来）。其递归定义如下：</p>
+<ol>
+<li><p>左右子树的高度差小于等于 1。</p>
+</li>
+<li><p>其每一个子树均为 AVL 树。</p>
+</li>
+</ol>
+<p>基于这一句话，我们就可以进行判断其一棵树是否为二叉树了。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/balanced-binary-tree/description/">练习</a></p>
+                
+            </div>
+        
+    </div>
+</div>
+<div class="post-card__meta">
+    
+        <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-24
+</a>
+    
+    
+        
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="button">数据结构</a>
+
+ 
+    
+</div>
+
+    <div class="post-tags post-card__tags">
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+
+<a href="/ckdlp3ay20003zo3ua2xmdxlz/" class="post-card__link">Link</a>
+                </div>
+            
+        
+    </div>
+    
+        
+            <br>
+            <nav role="navigation" aria-label="Pagination Navigation">
+                
+                <span>1 / 2</span>
+                
+                    <a href="/archives/2018/page/2/" class="button">
+                        下一页&nbsp;&gt;
+                    </a>
+                
+            </nav>
+        
+    
+
+
+	
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+
+
+    </body>
+</html>

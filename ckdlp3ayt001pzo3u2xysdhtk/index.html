@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>数字逻辑 - 组合电路：小型设计 笔记 | Nameless Blog</title>
+    
+        <meta name="keywords" content="数字逻辑设计与计算机组成">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="这一章介绍的是设计小的组合电路时候的设计方法。 信号命名标准对于一个信号，如果逻辑 1 表示有效，逻辑 0 表示无效，不活跃或者禁止的话，我们称此信号为高电平有效的，通常我们使用不带任何前缀或者后缀的名称来表示一个高电平有效的信号；如果逻辑 0 表示有效，逻辑 1 表示无效，不活跃或者禁止的话，该信号就是低电平有效的，我们一般使用带有下划线的名称来表示低电平有效信号。 对于单个信号，我们通常使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字逻辑 - 组合电路：小型设计 笔记">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayt001pzo3u2xysdhtk/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="这一章介绍的是设计小的组合电路时候的设计方法。 信号命名标准对于一个信号，如果逻辑 1 表示有效，逻辑 0 表示无效，不活跃或者禁止的话，我们称此信号为高电平有效的，通常我们使用不带任何前缀或者后缀的名称来表示一个高电平有效的信号；如果逻辑 0 表示有效，逻辑 1 表示无效，不活跃或者禁止的话，该信号就是低电平有效的，我们一般使用带有下划线的名称来表示低电平有效信号。 对于单个信号，我们通常使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/and_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/and_truthtable.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/or_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/or_truthtable.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/not_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/not_truthtable.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/nand_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/nand_truthtable.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/nor_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/nor_truthtable.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/xor_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/xor_truthtable.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/xnor_logic.jpg">
+<meta property="og:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/xnor_truthtable.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/08/08/5b6ae3abb446e.png">
+<meta property="og:image" content="http://www.circuitstoday.com/wp-content/uploads/2010/04/Full-Adder-Circuit.gif">
+<meta property="article:published_time" content="2018-08-09T15:25:05.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:07:50.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="数字逻辑设计与计算机组成">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.tutorialspoint.com/computer_logical_organization/images/and_logic.jpg">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        数字逻辑 - 组合电路：小型设计 笔记
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/08/" class="button" style="color: #808080;">
+    2018-08-09
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" class="button">数字逻辑</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E5%91%BD%E5%90%8D%E6%A0%87%E5%87%86"><span class="toc-text">信号命名标准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E9%80%BB%E8%BE%91%E9%97%A8"><span class="toc-text">基础逻辑门</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-text">逻辑表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B9%98%E7%A7%AF%E7%9A%84%E5%92%8C%EF%BC%88Sum-of-Product%EF%BC%8CSOP%EF%BC%89%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-text">乘积的和（Sum of Product，SOP）表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%AA%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0-SOP-%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-text">只用与非门实现 SOP 表达式</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%92%8C%E7%9A%84%E4%B9%98%E7%A7%AF%EF%BC%88Product-of-Sum-POS%EF%BC%89%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-text">和的乘积（Product of Sum, POS）表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#SOP-%E4%B8%8E-POS-%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-text">SOP 与 POS 的转换</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AF%B9%E5%81%B6%E5%8E%9F%E7%90%86"><span class="toc-text">对偶原理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#POS-%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">POS 表达式的实现</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%84%E8%8C%83%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%88%E8%8C%83%E5%BC%8F%EF%BC%89"><span class="toc-text">规范表达式（范式）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%8C%96%E7%AE%80"><span class="toc-text">逻辑化简</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%A1%E8%AF%BA%E5%9B%BE"><span class="toc-text">卡诺图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%8C%96%E7%AE%80%E7%AE%97%E6%B3%95"><span class="toc-text">逻辑化简算法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%96%E7%AE%80%E8%BD%AF%E4%BB%B6"><span class="toc-text">化简软件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B"><span class="toc-text">案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E5%8A%A0%E5%99%A8"><span class="toc-text">全加器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E9%80%89%E6%8B%A9%E5%99%A8%EF%BC%88MUX%EF%BC%89"><span class="toc-text">多路选择器（MUX）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E6%8F%8F%E8%BF%B0%E8%AF%AD%E8%A8%80%EF%BC%88Verilog%EF%BC%89"><span class="toc-text">硬件描述语言（Verilog）</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p> 这一章介绍的是设计小的组合电路时候的设计方法。</p>
+<h3 id="信号命名标准"><a href="#信号命名标准" class="headerlink" title="信号命名标准"></a>信号命名标准</h3><p>对于一个信号，如果逻辑 1 表示有效，逻辑 0 表示无效，不活跃或者禁止的话，我们称此信号为高电平有效的，通常我们使用不带任何前缀或者后缀的名称来表示一个高电平有效的信号；如果逻辑 0 表示有效，逻辑 1 表示无效，不活跃或者禁止的话，该信号就是低电平有效的，我们一般使用带有<u>下划线</u>的名称来表示低电平有效信号。</p>
+<p>对于单个信号，我们通常使用小写来表示，对于多个则一般用大写字母。比如 <code>x,X, _x , _X</code>分别定义了单个/多个 高电平/低电平信号。</p>
+<a id="more"></a>
+
+<h3 id="基础逻辑门"><a href="#基础逻辑门" class="headerlink" title="基础逻辑门"></a>基础逻辑门</h3><p>基础逻辑门共有如下七种，其符号以及真值表如下：</p>
+<ol>
+<li>与 (AND) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/and_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/and_truthtable.jpg" alt="真值表"></p>
+<ol start="2">
+<li>或 (OR) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/or_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/or_truthtable.jpg" alt="真值表"></p>
+<ol start="3">
+<li>非 (NOT) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/not_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/not_truthtable.jpg" alt="真值表"></p>
+<ol start="4">
+<li>与非 (NAND) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/nand_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/nand_truthtable.jpg" alt="真值表"></p>
+<ol start="5">
+<li>或非 (NOR) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/nor_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/nor_truthtable.jpg" alt="真值表"></p>
+<ol start="6">
+<li>异或 (XOR) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/xor_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/xor_truthtable.jpg" alt="真值表"></p>
+<ol start="7">
+<li>同或 (XNOR) 门</li>
+</ol>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/xnor_logic.jpg" alt="符号"></p>
+<p><img src="https://www.tutorialspoint.com/computer_logical_organization/images/xnor_truthtable.jpg" alt="真值表"></p>
+<p>*注释： 本段图片皆来自于 <a target="_blank" rel="noopener" href="https://www.tutorialspoint.com/computer_logical_organization/logic_gates.htm">https://www.tutorialspoint.com/computer_logical_organization/logic_gates.htm</a></p>
+<h3 id="逻辑表达式"><a href="#逻辑表达式" class="headerlink" title="逻辑表达式"></a>逻辑表达式</h3><p>在逻辑表达式中,如果取遍了全部的输入值所产生的真值表和某一真值表是相同的，那么这个逻辑表达式就和其真值表是等价的。在逻辑表达式中我们分别使用 ·（或者不使用任何符号） , + 以及上划线分别表示与或非三种逻辑关系，比如一个逻辑表达式可以如下：</p>
+<p>$ f(x) = \overline{xy} + xy$</p>
+<h4 id="乘积的和（Sum-of-Product，SOP）表达式"><a href="#乘积的和（Sum-of-Product，SOP）表达式" class="headerlink" title="乘积的和（Sum of Product，SOP）表达式"></a>乘积的和（Sum of Product，SOP）表达式</h4><p>当一个逻辑表达式定义了当输出为 1 时各个输入的值的时候，我们称其为乘积的和的表达式，这种表达式在形式上表示为几个乘积相加。例如：$f = \overline{xy} + xy$ 就是典型的乘积的和的表达式。</p>
+<p>乘积的和表达式可以转化为使用与或非三个逻辑门构成的电路，比如 $f = \overline{xy} + xy$ 可以转化为：</p>
+<p><img src="https://i.loli.net/2018/08/08/5b6ae3abb446e.png" alt="5b6ae3abb446e"></p>
+<h5 id="只用与非门实现-SOP-表达式"><a href="#只用与非门实现-SOP-表达式" class="headerlink" title="只用与非门实现 SOP 表达式"></a>只用与非门实现 SOP 表达式</h5><p>我们可以只使用与非门来构建一个 SOP 表达式的电路，该操作是基于如下两个基于德摩根律得来的转换得来的的：</p>
+<p>$\overline {xy} = \bar x + \bar y$</p>
+<p>$\overline {x + y} = \bar x \bar y$</p>
+<p>例如，我们使用与非门构建$f = \overline{xy} + xy$ 的电路时的转换步骤如下：</p>
+<ol>
+<li><p>将非门替换为两个输入端连接到同一个信号的的与非门，因为 $\bar x = \overline {x \cdot x}$</p>
+</li>
+<li><p>在 and1 和 and2 的后面分别添加两个非门，因为 $\bar {\bar x} = x$</p>
+</li>
+<li><p>将与门-非门的组合使用与非门代替</p>
+</li>
+<li><p>将非门-非门-或门的组合使用与非门代替，因为 $\overline {xy} = \bar x + \bar y$</p>
+</li>
+</ol>
+<p>基于这些步骤，我们不难得到表示$f = \overline{xy} + xy$的只使用与非门表示的电路。</p>
+<h4 id="和的乘积（Product-of-Sum-POS）表达式"><a href="#和的乘积（Product-of-Sum-POS）表达式" class="headerlink" title="和的乘积（Product of Sum, POS）表达式"></a>和的乘积（Product of Sum, POS）表达式</h4><p>当一个逻辑表达式定义了当输出为 0 时各个输入的值的时候，我们称其为和的乘积的表达式，这种表达式在形式上表示为几个和式相乘。例如：$f = (x + \bar y)(\bar x + y)$ 就是典型的和的乘积的表达式。一旦 POS 表达式其中一个和式为 0 时，整个逻辑表达式的取值为 0。</p>
+<h5 id="SOP-与-POS-的转换"><a href="#SOP-与-POS-的转换" class="headerlink" title="SOP 与 POS 的转换"></a>SOP 与 POS 的转换</h5><p>以下两个式子为 SOP 表达式与 POS 表达式之间的转换关系：</p>
+<ol>
+<li><p>$ f 的 POS 表达式 = \overline {\bar f 的 SOP 表达式} $</p>
+</li>
+<li><p>$ f 的 SOP 表达式 = \overline {\bar f 的 POS 表达式} $</p>
+</li>
+</ol>
+<p>利用这两个式子以及来自德摩根的定律，我们可以轻松进行 SOP 表达式与 POS 表达式间的转换。例如，已知$f 的 SOP 表达式 = \bar x y + x \bar y$，求 $f$ 的 POS 表达式：</p>
+<p>$f 的 POS 表达式 = \overline {\bar f 的 SOP 表达式} = \overline {\bar x y + x \bar y} = (\overline {\bar x y})(\overline {x \bar y}) = (\bar {\bar x} + \bar y)(\bar x + \bar {bar y}) = (x + \bar y)(\bar x + y)$</p>
+<h5 id="对偶原理"><a href="#对偶原理" class="headerlink" title="对偶原理"></a>对偶原理</h5><p>将一个表达式中的与或符号互换后的表达式称为原表达式的对偶表达式。显然，对 SOP 的表达式取对偶形式之后对每一项取反后得到的就是 POS 表达式。证明不在赘述。</p>
+<h5 id="POS-表达式的实现"><a href="#POS-表达式的实现" class="headerlink" title="POS 表达式的实现"></a>POS 表达式的实现</h5><p>与 SOP 表达式类似，POS 表达式也可以使用与或非三种逻辑门实现，我们也可以仅仅使用或非门实现 POS 表达式，具体实现方法与使用与非门实现 SOP 表达式类似，不再说明。</p>
+<p>概括的说，同一个函数的 SOP 表达式与 POS 表达式是等价的，两者产出相同的真实表，SOP 表达式用于与非门电路，POS 表达式用于或非门电路。</p>
+<h3 id="规范表达式（范式）"><a href="#规范表达式（范式）" class="headerlink" title="规范表达式（范式）"></a>规范表达式（范式）</h3><p>与离散中的概念类似，略去。</p>
+<h3 id="逻辑化简"><a href="#逻辑化简" class="headerlink" title="逻辑化简"></a>逻辑化简</h3><p>目的：使用最少的逻辑门以及对于每个门使用最少的输入来生成输出。</p>
+<h4 id="卡诺图"><a href="#卡诺图" class="headerlink" title="卡诺图"></a>卡诺图</h4><p>卡诺图是进行逻辑化简的一种方法，详见：<a target="_blank" rel="noopener" href="http://www.eecg.toronto.edu/~ahouse/mirror/engi3861/kmaps.pdf">http://www.eecg.toronto.edu/~ahouse/mirror/engi3861/kmaps.pdf</a></p>
+<h4 id="逻辑化简算法"><a href="#逻辑化简算法" class="headerlink" title="逻辑化简算法"></a>逻辑化简算法</h4><p>该算法又称为奎因-麦克拉斯基法，见： <a target="_blank" rel="noopener" href="http://www.cs.columbia.edu/~cs6861/handouts/quine-mccluskey-handout.pdf">http://www.cs.columbia.edu/~cs6861/handouts/quine-mccluskey-handout.pdf</a></p>
+<h4 id="化简软件"><a href="#化简软件" class="headerlink" title="化简软件"></a>化简软件</h4><p>在数字逻辑与计算机组成一书中，作者向我们介绍了 Espresso 这一软件的应用。大致使用方法如下：</p>
+<ol>
+<li><p>使用如下语法编写输入文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.i 4              # .i specifies the number of inputs </span><br><span class="line">.o 3       # .o specifies the number of outputs </span><br><span class="line">.ilb Q1 Q0 D N         # This line specifies the names of the inputs in order </span><br><span class="line">.ob T1 T0 OPEN      # This line specifies the names of the outputs in order </span><br><span class="line">0011 ---      #The first four digits (before the space) correspond </span><br><span class="line">0101 110       # to the inputs, the three after the space correspond </span><br><span class="line">0110 100       # to the outputs, both in order specified above. </span><br><span class="line">0001 010 </span><br><span class="line">0010 100 </span><br><span class="line">0111 --- </span><br><span class="line">1001 010 </span><br><span class="line">1010 010 </span><br><span class="line">1011 --- </span><br><span class="line">1100 001 </span><br><span class="line">1101 001 </span><br><span class="line">1110 001 </span><br><span class="line">1111 --- </span><br><span class="line">.e             # Signifies the end of the file.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行指令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">&gt; espresso temp.in</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>即可看到输出，十分简洁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.i 4</span><br><span class="line">.o 3</span><br><span class="line">.ilb Q1 Q0 D N</span><br><span class="line">.ob T1 T0 OPEN</span><br><span class="line">.p 5</span><br><span class="line">0-1- 100</span><br><span class="line">101- 010</span><br><span class="line">11-- 001</span><br><span class="line">-0-1 010</span><br><span class="line">01-1 110</span><br><span class="line">.e</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>该软件的官方网址为：<a target="_blank" rel="noopener" href="https://ptolemy.berkeley.edu/projects/embedded/pubs/downloads/espresso/index.htm">https://ptolemy.berkeley.edu/projects/embedded/pubs/downloads/espresso/index.htm</a> ，但因为代码年代过于久远，我们无法在现代系统上直接进行编译，笔者会在近几天内修复好此份代码使之在现代操作系统上能够执行。</p>
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><h4 id="全加器"><a href="#全加器" class="headerlink" title="全加器"></a>全加器</h4><p>一个全加器有三个输入，通常记为 $a,b,c_{in}$，两个输出，记为 $s,c_{out}$。其中 $c_{in}$ 为进位输入，$c_{out}$为进位输出。其真值表如下：</p>
+<p><strong>输入                 输出</strong></p>
+<p><strong>A             B             CIN         COUT    S</strong></p>
+<p>0              0              0              0              0</p>
+<p>0              0              1              0              1</p>
+<p>0              1              0              0              1</p>
+<p>0              1              1              1              0</p>
+<p>1              0              0              0              1</p>
+<p>1              0              1              1              0</p>
+<p>1              1              0              1              0</p>
+<p>1              1              1              1              1</p>
+<p>我们可以发现，全加器的作用可以视为是在求 $a,b,c_{in}$ 的和，并将个位输出到 $s$ ，进位数输出到 $c_{out}$ 里。不难发现，$s,c_{out} $ 的 SOP 表达式为：</p>
+<p>$s(a,b,c_{in}) = \Sigma(1,2,4,7)$</p>
+<p>$c_{out}(a,b,c_{in}) = \Sigma(3,5,6,7)$</p>
+<p>利用化简技巧，不难求出最小 SOP 表达式为：</p>
+<p>$s(a,b,c_{in}) = \bar a \bar bc_{in} + \bar ab \bar c_{in} + \bar abc_{in} + \overline {abc_{in}}$</p>
+<p>$c_{out}(a,b,c_{in}) = ab + ac_{in} + bc_{in}$</p>
+<p>或者，我们也可以使用异或操作进一步简化式子：</p>
+<p>$s(a,b,c_{in}) = a \oplus b \oplus c_{in}$</p>
+<p>$c_{out}(a,b,c_{in}) = ab + (a \oplus b)c_{in}$</p>
+<p>但是，尽管使用异或门大大减少了门的个数，但是会增加信号传输的时间。</p>
+<p><img src="http://www.circuitstoday.com/wp-content/uploads/2010/04/Full-Adder-Circuit.gif" alt="Full Adder Circuit"></p>
+<h4 id="多路选择器（MUX）"><a href="#多路选择器（MUX）" class="headerlink" title="多路选择器（MUX）"></a>多路选择器（MUX）</h4><p>多路选择器一般有 $2^n $个输入信号以及 $n$ 个选择信号，其作用是根据选择信号选择多个输入信号中的一个。2-1 选择器的真值表如下：</p>
+<table>
+<thead>
+<tr>
+<th>s</th>
+<th>x</th>
+<th>y</th>
+<th>r</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>显然，有</p>
+<p>$r(s,x,y) = \Sigma (2,3,5,7)$</p>
+<p>化简之后得到</p>
+<p>$r(s,x,y) = sy + \bar sx$</p>
+<p>对于更多扇入时，方法类似。</p>
+<h3 id="硬件描述语言（Verilog）"><a href="#硬件描述语言（Verilog）" class="headerlink" title="硬件描述语言（Verilog）"></a>硬件描述语言（Verilog）</h3><p><a target="_blank" rel="noopener" href="http://web.stanford.edu/class/ee183/tutorial/ee183_tutorial.pdf">http://web.stanford.edu/class/ee183/tutorial/ee183_tutorial.pdf</a></p>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" class="post-cats__link button">数字逻辑</a>
+    
+    
+        <a href="/tags/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91%E8%AE%BE%E8%AE%A1%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90/" class="post-tags__link button"># 数字逻辑设计与计算机组成</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                source: {
+                    '[tex]/amsCd': '[tex]/amscd',
+                    '[tex]/AMScd': '[tex]/amscd'
+                }
+            },
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams'
+            },
+            options: {
+                renderActions: {
+                    findScript: [10, doc => {
+                        document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                            const display = !!node.type.match(/; *mode=display/);
+                            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                            const text = document.createTextNode('');
+                            node.parentNode.replaceChild(text, node);
+                            math.start = {node: text, delim: '', n: 0};
+                            math.end = {node: text, delim: '', n: 0};
+                            doc.math.push(math);
+                        });
+                    }, '', false],
+                    insertedScript: [200, () => {
+                        document.querySelectorAll('mjx-container').forEach(node => {
+                            let target = node.parentNode;
+                            if (target.nodeName.toLowerCase() === 'li') {
+                                target.parentNode.classList.add('has-jax');
+                            }
+                        });
+                    }, '', false]
+                }
+            }
+        };
+        (function () {
+            var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.startup.document.state(0);
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>详解 C 语言链表（应用篇） -- 浅析 Linux kernel 中的 list.h 头文件（二） | Nameless Blog</title>
+    
+        <meta name="keywords" content="C">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="基础篇  实践篇  应用篇（一）    注： 本文分析的为文章发布时最新的 Linux 内核源码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解 C 语言链表（应用篇） -- 浅析 Linux kernel 中的 list.h 头文件（二）">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3aye000jzo3u90ughfcf/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="基础篇  实践篇  应用篇（一）    注： 本文分析的为文章发布时最新的 Linux 内核源码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/IMG_20180317_144320.jpg">
+<meta property="article:published_time" content="2018-03-17T13:00:00.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:07:56.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://coding.net/u/name1e5s/p/pic/git/raw/master/IMG_20180317_144320.jpg">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        详解 C 语言链表（应用篇） -- 浅析 Linux kernel 中的 list.h 头文件（二）
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-17
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/C/" class="button">C</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A6%E7%A7%BB%E9%93%BE%E8%A1%A8%EF%BC%8C%E5%8D%B3%E5%B0%86%E9%93%BE%E8%A1%A8%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E8%8A%82%E7%82%B9%E7%A7%BB%E5%8A%A8%E5%88%B0%E6%9C%80%E5%90%8E"><span class="toc-text">左移链表，即将链表的第一个节点移动到最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%89%B2%E9%93%BE%E8%A1%A8"><span class="toc-text">分割链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E5%90%88%E5%B9%B6"><span class="toc-text">链表的合并</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%8D%E5%8E%86"><span class="toc-text">遍历</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <ul>
+<li><p><a target="_blank" rel="noopener" href="https://kuso-kodo.github.io/2018/03/14/Linked-List-Basic/">基础篇</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://kuso-kodo.github.io/2018/03/16/Linked-List-Midlevel/">实践篇</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://kuso-kodo.github.io/2018/03/17/Linked-List-Advanced-1/">应用篇（一）</a></p>
+</li>
+</ul>
+<hr>
+<p>注： 本文分析的为文章发布时最新的 Linux 内核源码。</p>
+<hr>
+<a id="more"></a>
+
+<h2 id="左移链表，即将链表的第一个节点移动到最后"><a href="#左移链表，即将链表的第一个节点移动到最后" class="headerlink" title="左移链表，即将链表的第一个节点移动到最后"></a>左移链表，即将链表的第一个节点移动到最后</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_rotate_left - rotate the list to the left</span></span><br><span class="line"><span class="comment"> * @head: the head of the list</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">list_rotate_left</span><span class="params">(struct list_head *head)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> *<span class="title">first</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!list_empty(head)) &#123;</span><br><span class="line">        first = head-&gt;next;</span><br><span class="line">        list_move_tail(first, head);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>处理完链表是空的的特殊情况之后，直接移动就好。</p>
+<h2 id="分割链表"><a href="#分割链表" class="headerlink" title="分割链表"></a>分割链表</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_cut_position - cut a list into two</span></span><br><span class="line"><span class="comment"> * @list: a new list to add all removed entries</span></span><br><span class="line"><span class="comment"> * @head: a list with entries</span></span><br><span class="line"><span class="comment"> * @entry: an entry within head, could be the head itself</span></span><br><span class="line"><span class="comment"> *    and if so we won&#x27;t cut the list</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This helper moves the initial part of @head, up to and</span></span><br><span class="line"><span class="comment"> * including @entry, from @head to @list. You should</span></span><br><span class="line"><span class="comment"> * pass on @entry an element you know is on @head. @list</span></span><br><span class="line"><span class="comment"> * should be an empty list or a list you do not care about</span></span><br><span class="line"><span class="comment"> * losing its data.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">list_cut_position</span><span class="params">(struct list_head *<span class="built_in">list</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        struct list_head *head, struct list_head *entry)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (list_empty(head))</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (list_is_singular(head) &amp;&amp;</span><br><span class="line">        (head-&gt;next != entry &amp;&amp; head != entry))</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (entry == head)</span><br><span class="line">        INIT_LIST_HEAD(<span class="built_in">list</span>);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        __list_cut_position(<span class="built_in">list</span>, head, entry);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数的各个参数的含义如下：</p>
+<p>list： 收留要被剪切的节点的链表</p>
+<p>head： 要被剪切的链表</p>
+<p>entry：剪切入口</p>
+<p>代码在处理了一些特殊情况之后，使用一个单独的函数 <code>__list_cut_position</code> 来进行一般情况的处理。函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> __list_cut_position(struct list_head *<span class="built_in">list</span>,</span><br><span class="line">        struct list_head *head, struct list_head *entry)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> *<span class="title">new_first</span> = <span class="title">entry</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line">    <span class="built_in">list</span>-&gt;next = head-&gt;next;</span><br><span class="line">    <span class="built_in">list</span>-&gt;next-&gt;prev = <span class="built_in">list</span>;</span><br><span class="line">    <span class="built_in">list</span>-&gt;prev = entry;</span><br><span class="line">    entry-&gt;next = <span class="built_in">list</span>;</span><br><span class="line">    head-&gt;next = new_first;</span><br><span class="line">    new_first-&gt;prev = head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总的来说，该函数的作用就是如下图：</p>
+<p><img src="https://coding.net/u/name1e5s/p/pic/git/raw/master/IMG_20180317_144320.jpg"></p>
+<h2 id="链表的合并"><a href="#链表的合并" class="headerlink" title="链表的合并"></a>链表的合并</h2><p>链表的合并共有如下四种形式。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_splice - join two lists, this is designed for stacks</span></span><br><span class="line"><span class="comment"> * @list: the new list to add.</span></span><br><span class="line"><span class="comment"> * @head: the place to add it in the first list.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">list_splice</span><span class="params">(<span class="keyword">const</span> struct list_head *<span class="built_in">list</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                struct list_head *head)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!list_empty(<span class="built_in">list</span>))</span><br><span class="line">        __list_splice(<span class="built_in">list</span>, head, head-&gt;next);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_splice_tail - join two lists, each list being a queue</span></span><br><span class="line"><span class="comment"> * @list: the new list to add.</span></span><br><span class="line"><span class="comment"> * @head: the place to add it in the first list.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">list_splice_tail</span><span class="params">(struct list_head *<span class="built_in">list</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                struct list_head *head)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!list_empty(<span class="built_in">list</span>))</span><br><span class="line">        __list_splice(<span class="built_in">list</span>, head-&gt;prev, head);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_splice_init - join two lists and reinitialise the emptied list.</span></span><br><span class="line"><span class="comment"> * @list: the new list to add.</span></span><br><span class="line"><span class="comment"> * @head: the place to add it in the first list.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The list at @list is reinitialised</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">list_splice_init</span><span class="params">(struct list_head *<span class="built_in">list</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                    struct list_head *head)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!list_empty(<span class="built_in">list</span>)) &#123;</span><br><span class="line">        __list_splice(<span class="built_in">list</span>, head, head-&gt;next);</span><br><span class="line">        INIT_LIST_HEAD(<span class="built_in">list</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_splice_tail_init - join two lists and reinitialise the emptied list</span></span><br><span class="line"><span class="comment"> * @list: the new list to add.</span></span><br><span class="line"><span class="comment"> * @head: the place to add it in the first list.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Each of the lists is a queue.</span></span><br><span class="line"><span class="comment"> * The list at @list is reinitialised</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">list_splice_tail_init</span><span class="params">(struct list_head *<span class="built_in">list</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                     struct list_head *head)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!list_empty(<span class="built_in">list</span>)) &#123;</span><br><span class="line">        __list_splice(<span class="built_in">list</span>, head-&gt;prev, head);</span><br><span class="line">        INIT_LIST_HEAD(<span class="built_in">list</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这四种形式无一例外，都是使用函数 <code>__list_splice</code> 进行实现，代码如下，写的极其简明直观。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> __list_splice(<span class="keyword">const</span> struct list_head *<span class="built_in">list</span>,</span><br><span class="line">                 struct list_head *prev,</span><br><span class="line">                 struct list_head *next)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> *<span class="title">first</span> = <span class="title">list</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> *<span class="title">last</span> = <span class="title">list</span>-&gt;<span class="title">prev</span>;</span></span><br><span class="line"></span><br><span class="line">    first-&gt;prev = prev;</span><br><span class="line">    prev-&gt;next = first;</span><br><span class="line"></span><br><span class="line">    last-&gt;next = next;</span><br><span class="line">    next-&gt;prev = last;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h2><p>链表的各种遍历操作都是十分简单的，在 list.h 中便定义了很多简单的遍历宏。大多数宏都和如下宏类似：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_for_each    -    iterate over a list</span></span><br><span class="line"><span class="comment"> * @pos:    the &amp;struct list_head to use as a loop cursor.</span></span><br><span class="line"><span class="comment"> * @head:    the head for your list.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> list_for_each(pos, head) \</span></span><br><span class="line">    <span class="keyword">for</span> (pos = (head)-&gt;next; pos != (head); pos = pos-&gt;next)</span><br></pre></td></tr></table></figure>
+
+<p>这些操作过于简单，不再说明。</p>
+<p>Linux 内核的链表遍历中的难点是根据链表节点的地址求出结构体的地址，最终使用结构体里面的数据。为此，内核里定义了一个使用 <code>container_of</code> 宏的 <code>list_entry</code> 宏。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * list_entry - get the struct for this entry</span></span><br><span class="line"><span class="comment"> * @ptr:    the &amp;struct list_head pointer.</span></span><br><span class="line"><span class="comment"> * @type:    the type of the struct this is embedded in.</span></span><br><span class="line"><span class="comment"> * @member:    the name of the list_head within the struct.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> list_entry(ptr, type, member) \</span></span><br><span class="line">    container_of(ptr, type, member)</span><br></pre></td></tr></table></figure>
+
+<p><code>container_of</code> 宏在 <code>linux.h</code> 中定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// In [include/linux/kernel.h]</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * container_of - cast a member of a structure out to the containing structure</span></span><br><span class="line"><span class="comment"> * @ptr:    the pointer to the member.</span></span><br><span class="line"><span class="comment"> * @type:    the type of the container struct this is embedded in.</span></span><br><span class="line"><span class="comment"> * @member:    the name of the member within the struct.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> container_of(ptr, type, member) (&#123;                \</span></span><br><span class="line">    <span class="keyword">void</span> *__mptr = (<span class="keyword">void</span> *)(ptr);                    \</span><br><span class="line">    BUILD_BUG_ON_MSG(!__same_type(*(ptr), ((type *)<span class="number">0</span>)-&gt;member) &amp;&amp;    \</span><br><span class="line">             !__same_type(*(ptr), <span class="keyword">void</span>),            \</span><br><span class="line">             <span class="string">&quot;pointer type mismatch in container_of()&quot;</span>);    \</span><br><span class="line">    ((type *)(__mptr - offsetof(type, member))); &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>上文中出现的 <code>offsetof</code> 宏定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// In [include/linux/stddef.h]</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> offsetof(TYPE, MEMBER)    ((size_t)&amp;((TYPE *)0)-&gt;MEMBER)</span></span><br></pre></td></tr></table></figure>
+
+<p>因此，<code>container_of</code> 宏可以被简化为这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">const</span> <span class="title">typeof</span><span class="params">(((type *)<span class="number">0</span>)-&gt;member )</span> *__mptr </span>= (ptr);</span><br><span class="line">(type *)((<span class="keyword">char</span> *)__mptr - ((<span class="keyword">size_t</span>) &amp;((type *)<span class="number">0</span>)-&gt;member));</span><br></pre></td></tr></table></figure>
+
+<p>注意在上面我们使用了 <code>(char *)</code> 进行了强制类型转换以计算偏移量。</p>
+<p>上面的 <code>typeof</code> 是 GCC 的拓展，求出某一量的类型，使用方法和 <code>sizeof</code> 类似。</p>
+<p>以上です。</p>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/C/" class="post-cats__link button">C</a>
+    
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

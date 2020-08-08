@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>Go 语言系统调用 | Nameless Blog</title>
+    
+        <meta name="keywords" content="Go 语言">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="64位 Linux 上的系统调用系统调用是操作系统内核提供给用户空间程序的一套标准接口。通过这套接口，用户态程序可以受限地访问硬件设备，从而实现申请系统资源，读写设备，创建新进程等操作。事实上，我们常用的 C 语言标准库中不少都是对操作系统提供的系统调用的封装，比如大家耳熟能详的 printf, gets, fopen 等，就分别是对 read, write, open 这些系统调用的封装。使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 语言系统调用">
+<meta property="og:url" content="https://blog.name1e5s.com/ckdlp3ayi000tzo3u76954ld6/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="64位 Linux 上的系统调用系统调用是操作系统内核提供给用户空间程序的一套标准接口。通过这套接口，用户态程序可以受限地访问硬件设备，从而实现申请系统资源，读写设备，创建新进程等操作。事实上，我们常用的 C 语言标准库中不少都是对操作系统提供的系统调用的封装，比如大家耳熟能详的 printf, gets, fopen 等，就分别是对 read, write, open 这些系统调用的封装。使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-03-04T10:32:25.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:08:00.000Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="Go 语言">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        Go 语言系统调用
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2019/03/" class="button" style="color: #808080;">
+    2019-03-04
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/Go-%E8%AF%AD%E8%A8%80/" class="button">Go 语言</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#64%E4%BD%8D-Linux-%E4%B8%8A%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">64位 Linux 上的系统调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Go-%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">Go 语言中的系统调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%B7%B1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">自己封装系统调用</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <h3 id="64位-Linux-上的系统调用"><a href="#64位-Linux-上的系统调用" class="headerlink" title="64位 Linux 上的系统调用"></a>64位 Linux 上的系统调用</h3><p>系统调用是操作系统内核提供给用户空间程序的一套标准接口。通过这套接口，用户态程序可以<strong>受限地</strong>访问硬件设备，从而实现申请系统资源，读写设备，创建新进程等操作。事实上，我们常用的 C 语言标准库中不少都是对操作系统提供的系统调用的封装，比如大家耳熟能详的 <code>printf</code>, <code>gets</code>, <code>fopen</code> 等，就分别是对 <code>read</code>, <code>write</code>, <code>open</code> 这些系统调用的封装。使用 <code>ltrace</code> 来追踪调用就可以清楚地看到这一点，例如：</p>
+<a id="more"></a>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="comment">/* The well-known &quot;Hello World&quot; */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello World!\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于上面这段代码编译后使用 <code>ltrace</code> 调试，即可得到如下输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@asgard:~$ gcc test.c </span><br><span class="line">name1e5s@asgard:~$ ltrace -S ./a.out </span><br><span class="line">SYS_brk(0)                                                                                                           = 0x55eb2abba000</span><br><span class="line">SYS_access(<span class="string">&quot;/etc/ld.so.nohwcap&quot;</span>, 00) = -2</span><br><span class="line">SYS_access(<span class="string">&quot;/etc/ld.so.preload&quot;</span>, 04) = -2</span><br><span class="line">SYS_openat(0xffffff9c, 0x7f2290c00428, 0x80000, 0) = 3</span><br><span class="line">SYS_fstat(3, 0x7ffd2e03aa20) = 0</span><br><span class="line">SYS_mmap(0, 0x21b06, 1, 2)  = 0x7f2290de4000</span><br><span class="line">SYS_close(3) = 0</span><br><span class="line">SYS_access(<span class="string">&quot;/etc/ld.so.nohwcap&quot;</span>, 00) = -2</span><br><span class="line">SYS_openat(0xffffff9c, 0x7f2290e08dd0, 0x80000, 0) = 3</span><br><span class="line">SYS_read(3, <span class="string">&quot;\177ELF\002\001\001\003&quot;</span>, 832) = 832</span><br><span class="line">SYS_fstat(3, 0x7ffd2e03aa80) = 0</span><br><span class="line">SYS_mmap(0, 8192, 3, 34) = 0x7f2290de2000</span><br><span class="line">SYS_mmap(0, 0x3f0ae0, 5, 2050) = 0x7f22907ee000</span><br><span class="line">SYS_mprotect(0x7f22909d5000, 2097152, 0) = 0</span><br><span class="line">SYS_mmap(0x7f2290bd5000, 0x6000, 3, 2066) = 0x7f2290bd5000</span><br><span class="line">SYS_mmap(0x7f2290bdb000, 0x3ae0, 3, 50) = 0x7f2290bdb000</span><br><span class="line">SYS_close(3) = 0</span><br><span class="line">SYS_arch_prctl(4098, 0x7f2290de34c0, 0x7f2290de3e00, 0x7f2290de2988) = 0</span><br><span class="line">SYS_mprotect(0x7f2290bd5000, 16384, 1) = 0</span><br><span class="line">SYS_mprotect(0x55eb28ecf000, 4096, 1) = 0</span><br><span class="line">SYS_mprotect(0x7f2290e06000, 4096, 1) = 0</span><br><span class="line">SYS_munmap(0x7f2290de4000, 137990) = 0</span><br><span class="line">puts(<span class="string">&quot;Hello World!&quot;</span> &lt;unfinished ...&gt;</span><br><span class="line">SYS_fstat(1, 0x7ffd2e03b280) = 0</span><br><span class="line">SYS_brk(0) = 0x55eb2abba000</span><br><span class="line">SYS_brk(0x55eb2abdb000) = 0x55eb2abdb000</span><br><span class="line">SYS_write(1, <span class="string">&quot;Hello World!\n&quot;</span>, 13Hello World!</span><br><span class="line">) = 13</span><br><span class="line">&lt;... puts resumed&gt; ) = 13</span><br><span class="line">SYS_exit_group(0 &lt;no <span class="built_in">return</span> ...&gt;</span><br><span class="line">+++ exited (status 0) +++</span><br></pre></td></tr></table></figure>
+<p>其中 <code>SYS_</code> 开头的均为系统调用，可见系统调用几乎是无处不在。在当前版本的 <code>amd64 Linux</code> 内核中有不到四百个系统调用（详见<a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl">这里</a>），我们可以使用内核提供的 C 接口或者是直接使用汇编代码来调用他们。</p>
+<p>历史上，<code>x86(-64)</code> 上共有<code>int 80</code>, <code>sysenter</code>, <code>syscall</code>三种方式来实现系统调用。<code>int 80</code> 是最传统的调用方式，其通过中断/异常来实现。<code>sysenter</code> 与 <code>syscall</code> 则都是通过引入新的寄存器组( Model-Specific Register(MSR))存放所需信息，进而实现快速跳转。这两者之间的主要区别就是定义的厂商不一样，<code>sysenter</code> 是 Intel 主推，后者则是 AMD 的定义。到了 64位时代，因为安腾架构（IA-64）大失败，农企终于借着 <code>x86_64</code> 架构咸鱼翻身，搞得 Intel 只得兼容 <code>syscall</code>。<code>Linux</code> 在 <code>2.6</code> 的后期开始引入 <code>sysenter</code> 指令，从<a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/linux/kernel/l-k26ncpu/index.html">当年遗留下来的文章</a>来看，与老古董 <code>int 80</code> 比跑的确实比香港记者还要快。因此为了性能，我们的 Go 语言自然也是使用 <code>syscall/sysenter</code> 进行系统调用。如果读者想要了解更多关于 LInux 系统调用的知识，还请参阅<a target="_blank" rel="noopener" href="https://blog.packagecloud.io/eng/2016/04/05/the-definitive-guide-to-linux-system-calls/">这篇文章</a>。</p>
+<h3 id="Go-语言中的系统调用"><a href="#Go-语言中的系统调用" class="headerlink" title="Go 语言中的系统调用"></a>Go 语言中的系统调用</h3><p>尽管 Go 语言具有 cgo 这样的设施可以方便快捷地调用 C 函数，但是其还是自己对系统调用进行了封装，以 <code>amd64</code> 架构为例， Go 语言中的系统调用是通过如下几个函数完成的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// In syscall_unix.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Syscall</span><span class="params">(trap, a1, a2, a3 <span class="keyword">uintptr</span>)</span> <span class="params">(r1, r2 <span class="keyword">uintptr</span>, err Errno)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Syscall6</span><span class="params">(trap, a1, a2, a3, a4, a5, a6 <span class="keyword">uintptr</span>)</span> <span class="params">(r1, r2 <span class="keyword">uintptr</span>, err Errno)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RawSyscall</span><span class="params">(trap, a1, a2, a3 <span class="keyword">uintptr</span>)</span> <span class="params">(r1, r2 <span class="keyword">uintptr</span>, err Errno)</span></span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RawSyscall6</span><span class="params">(trap, a1, a2, a3, a4, a5, a6 <span class="keyword">uintptr</span>)</span> <span class="params">(r1, r2 <span class="keyword">uintptr</span>, err Errno)</span></span></span><br></pre></td></tr></table></figure>
+<p>其中 <code>Syscall</code> 对应参数不超过四个的系统调用，<code>Syscall6</code> 则对应参数不超过六个的系统调用。对于 <code>amd64</code> 架构的 Linux，这几个函数的实现在 <code>asm_linux_amd64.s</code> 内，代码不是很多，摘录如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// func Syscall(trap int64, a1, a2, a3 uintptr) (r1, r2, err uintptr);</span></span><br><span class="line"><span class="comment">// Trap # in AX, args in DI SI DX R10 R8 R9, return in AX DX</span></span><br><span class="line"><span class="comment">// Note that this differs from &quot;standard&quot; ABI convention, which</span></span><br><span class="line"><span class="comment">// would pass 4th arg in CX, not R10.</span></span><br><span class="line"></span><br><span class="line">TEXT ·Syscall(SB),NOSPLIT,$<span class="number">0</span><span class="number">-56</span></span><br><span class="line">    CALL    runtime·entersyscall(SB)</span><br><span class="line">    MOVQ    a1+<span class="number">8</span>(FP), DI</span><br><span class="line">    MOVQ    a2+<span class="number">16</span>(FP), SI</span><br><span class="line">    MOVQ    a3+<span class="number">24</span>(FP), DX</span><br><span class="line">    MOVQ    $<span class="number">0</span>, R10</span><br><span class="line">    MOVQ    $<span class="number">0</span>, R8</span><br><span class="line">    MOVQ    $<span class="number">0</span>, R9</span><br><span class="line">    MOVQ    trap+<span class="number">0</span>(FP), AX    <span class="comment">// syscall entry</span></span><br><span class="line">    SYSCALL</span><br><span class="line">    CMPQ    AX, $<span class="number">0xfffffffffffff001</span></span><br><span class="line">    JLS    ok</span><br><span class="line">    MOVQ    $<span class="number">-1</span>, r1+<span class="number">32</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, r2+<span class="number">40</span>(FP)</span><br><span class="line">    NEGQ    AX</span><br><span class="line">    MOVQ    AX, err+<span class="number">48</span>(FP)</span><br><span class="line">    CALL    runtime·exitsyscall(SB)</span><br><span class="line">    RET</span><br><span class="line">ok:</span><br><span class="line">    MOVQ    AX, r1+<span class="number">32</span>(FP)</span><br><span class="line">    MOVQ    DX, r2+<span class="number">40</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, err+<span class="number">48</span>(FP)</span><br><span class="line">    CALL    runtime·exitsyscall(SB)</span><br><span class="line">    RET</span><br><span class="line"></span><br><span class="line"><span class="comment">// func Syscall6(trap, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2, err uintptr)</span></span><br><span class="line">TEXT ·Syscall6(SB),NOSPLIT,$<span class="number">0</span><span class="number">-80</span></span><br><span class="line">    CALL    runtime·entersyscall(SB)</span><br><span class="line">    MOVQ    a1+<span class="number">8</span>(FP), DI</span><br><span class="line">    MOVQ    a2+<span class="number">16</span>(FP), SI</span><br><span class="line">    MOVQ    a3+<span class="number">24</span>(FP), DX</span><br><span class="line">    MOVQ    a4+<span class="number">32</span>(FP), R10</span><br><span class="line">    MOVQ    a5+<span class="number">40</span>(FP), R8</span><br><span class="line">    MOVQ    a6+<span class="number">48</span>(FP), R9</span><br><span class="line">    MOVQ    trap+<span class="number">0</span>(FP), AX    <span class="comment">// syscall entry</span></span><br><span class="line">    SYSCALL</span><br><span class="line">    CMPQ    AX, $<span class="number">0xfffffffffffff001</span></span><br><span class="line">    JLS    ok6</span><br><span class="line">    MOVQ    $<span class="number">-1</span>, r1+<span class="number">56</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, r2+<span class="number">64</span>(FP)</span><br><span class="line">    NEGQ    AX</span><br><span class="line">    MOVQ    AX, err+<span class="number">72</span>(FP)</span><br><span class="line">    CALL    runtime·exitsyscall(SB)</span><br><span class="line">    RET</span><br><span class="line">ok6:</span><br><span class="line">    MOVQ    AX, r1+<span class="number">56</span>(FP)</span><br><span class="line">    MOVQ    DX, r2+<span class="number">64</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, err+<span class="number">72</span>(FP)</span><br><span class="line">    CALL    runtime·exitsyscall(SB)</span><br><span class="line">    RET</span><br><span class="line"></span><br><span class="line"><span class="comment">// func RawSyscall(trap, a1, a2, a3 uintptr) (r1, r2, err uintptr)</span></span><br><span class="line">TEXT ·RawSyscall(SB),NOSPLIT,$<span class="number">0</span><span class="number">-56</span></span><br><span class="line">    MOVQ    a1+<span class="number">8</span>(FP), DI</span><br><span class="line">    MOVQ    a2+<span class="number">16</span>(FP), SI</span><br><span class="line">    MOVQ    a3+<span class="number">24</span>(FP), DX</span><br><span class="line">    MOVQ    $<span class="number">0</span>, R10</span><br><span class="line">    MOVQ    $<span class="number">0</span>, R8</span><br><span class="line">    MOVQ    $<span class="number">0</span>, R9</span><br><span class="line">    MOVQ    trap+<span class="number">0</span>(FP), AX    <span class="comment">// syscall entry</span></span><br><span class="line">    SYSCALL</span><br><span class="line">    CMPQ    AX, $<span class="number">0xfffffffffffff001</span></span><br><span class="line">    JLS    ok1</span><br><span class="line">    MOVQ    $<span class="number">-1</span>, r1+<span class="number">32</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, r2+<span class="number">40</span>(FP)</span><br><span class="line">    NEGQ    AX</span><br><span class="line">    MOVQ    AX, err+<span class="number">48</span>(FP)</span><br><span class="line">    RET</span><br><span class="line">ok1:</span><br><span class="line">    MOVQ    AX, r1+<span class="number">32</span>(FP)</span><br><span class="line">    MOVQ    DX, r2+<span class="number">40</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, err+<span class="number">48</span>(FP)</span><br><span class="line">    RET</span><br><span class="line"></span><br><span class="line"><span class="comment">// func RawSyscall6(trap, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2, err uintptr)</span></span><br><span class="line">TEXT ·RawSyscall6(SB),NOSPLIT,$<span class="number">0</span><span class="number">-80</span></span><br><span class="line">    MOVQ    a1+<span class="number">8</span>(FP), DI</span><br><span class="line">    MOVQ    a2+<span class="number">16</span>(FP), SI</span><br><span class="line">    MOVQ    a3+<span class="number">24</span>(FP), DX</span><br><span class="line">    MOVQ    a4+<span class="number">32</span>(FP), R10</span><br><span class="line">    MOVQ    a5+<span class="number">40</span>(FP), R8</span><br><span class="line">    MOVQ    a6+<span class="number">48</span>(FP), R9</span><br><span class="line">    MOVQ    trap+<span class="number">0</span>(FP), AX    <span class="comment">// syscall entry</span></span><br><span class="line">    SYSCALL</span><br><span class="line">    CMPQ    AX, $<span class="number">0xfffffffffffff001</span></span><br><span class="line">    JLS    ok2</span><br><span class="line">    MOVQ    $<span class="number">-1</span>, r1+<span class="number">56</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, r2+<span class="number">64</span>(FP)</span><br><span class="line">    NEGQ    AX</span><br><span class="line">    MOVQ    AX, err+<span class="number">72</span>(FP)</span><br><span class="line">    RET</span><br><span class="line">ok2:</span><br><span class="line">    MOVQ    AX, r1+<span class="number">56</span>(FP)</span><br><span class="line">    MOVQ    DX, r2+<span class="number">64</span>(FP)</span><br><span class="line">    MOVQ    $<span class="number">0</span>, err+<span class="number">72</span>(FP)</span><br><span class="line">    RET</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，<code>Syscall</code> 和 <code>RawSyscall</code> 在源代码上的区别就是有没有调用 <code>runtime</code> 包提供的两个函数。这意味着前者在发生阻塞时可以通知运行时并继续运行其他协 程，而后者只会卡掉整个程序。我们在自己封装自定义调用时应当尽量使用 <code>Syscall</code>。</p>
+<h3 id="自己封装系统调用"><a href="#自己封装系统调用" class="headerlink" title="自己封装系统调用"></a>自己封装系统调用</h3><p>Go 语言通过手写与 <code>Perl</code> 脚本自动生成相结合的方式定义了很多系统调用的函数，可以查阅文档来使用，这里只举一个直接使用 <code>Syscall</code> 函数查看当前进程 PID 的例子：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;syscall&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    pid, _, _ := syscall.Syscall(<span class="number">39</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>) <span class="comment">// 用不到的就补上 0</span></span><br><span class="line">    fmt.Println(<span class="string">&quot;Process id: &quot;</span>, pid)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">name1e5s@asgard:~$ go run test.go </span><br><span class="line">Process id:  19184</span><br></pre></td></tr></table></figure>
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2019-06-28
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/Go-%E8%AF%AD%E8%A8%80/" class="post-cats__link button">Go 语言</a>
+    
+    
+        <a href="/tags/Go-%E8%AF%AD%E8%A8%80/" class="post-tags__link button"># Go 语言</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

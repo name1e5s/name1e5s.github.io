@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!--icon-->
+    
+        <link rel="shortcut icon" type='image/x-icon' href="/favicon.ico">
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- meta -->
+    
+    <title>电路设计中的分治法 —— 以 Chisel 实现优先编码器为例 | Nameless Blog</title>
+    
+        <meta name="keywords" content="数字逻辑设计与计算机组成">
+    
+
+    <!-- OpenGraph -->
+     
+        <meta name="description" content="在实现我的毕业设计时，遇到了这么一个需求：找出一组数字中最低（高）位的 1 的位置 —— 换句话说，就是一个优先编码器。显然最基本的版本实现起来很简单，尤其是我们还是在使用 Chisel 这么个懒人神器的情况下，初代代码如下（仅作为例子，下同），一行就解决了问题。 1234567class Example extends Module &amp;#123;  val io &#x3D; IO(new Bundle(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="电路设计中的分治法 —— 以 Chisel 实现优先编码器为例">
+<meta property="og:url" content="https://blog.name1e5s.com/ckjfmilce00006wyl4i688qvz/index.html">
+<meta property="og:site_name" content="Nameless Blog">
+<meta property="og:description" content="在实现我的毕业设计时，遇到了这么一个需求：找出一组数字中最低（高）位的 1 的位置 —— 换句话说，就是一个优先编码器。显然最基本的版本实现起来很简单，尤其是我们还是在使用 Chisel 这么个懒人神器的情况下，初代代码如下（仅作为例子，下同），一行就解决了问题。 1234567class Example extends Module &amp;#123;  val io &#x3D; IO(new Bundle(">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-02T11:25:05.000Z">
+<meta property="article:modified_time" content="2021-01-02T11:29:02.409Z">
+<meta property="article:author" content="Name1e5s">
+<meta property="article:tag" content="数字逻辑设计与计算机组成">
+<meta name="twitter:card" content="summary_large_image">
+    
+
+    <!-- feed -->
+    
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+    
+    
+        
+<link rel="stylesheet" href="/css/style/dark.css">
+
+        
+<script src="/js/darkmode.js"></script>
+
+    
+
+    
+        
+            <link rel="stylesheet" id="hljs-default-theme" href="/css/highlight/default.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')===-1)this.media='all'">
+            
+                <link rel="stylesheet" id="hljs-dark-theme" href="/css/highlight/dark.css" media="none" onload="if(getComputedStyle(document.documentElement).getPropertyValue('--color-mode').indexOf('dark')!==-1)this.media='all'">
+            
+        
+    
+
+    
+        <link rel="stylesheet" href="/css/style/note.css" media="none" onload="this.media='all'">
+    
+
+     
+
+    
+
+<meta name="generator" content="Hexo 5.0.0"></head>
+
+    <body>
+        <div id="app">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">
+                Nameless Blog 
+            </span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="cover__menus">
+                
+                    <a href="/" class="cover-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="cover-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="cover-menu button">
+                        关于
+                    </a>
+                
+            </div>
+        
+        
+            <a href="javaScript:void(0);" id="btn-toggle-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </a>
+        
+         
+            <a href="javaScript:void(0);" id="b2t" style="" aria-label="回到顶部" title="回到顶部">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='32' height='32' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.889,11.611c-0.17,0.17-0.443,0.17-0.612,0l-3.189-3.187l-3.363,3.36c-0.171,0.171-0.441,0.171-0.612,0c-0.172-0.169-0.172-0.443,0-0.611l3.667-3.669c0.17-0.17,0.445-0.172,0.614,0l3.496,3.493C14.058,11.167,14.061,11.443,13.889,11.611 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.692-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.383,10c0-4.07-3.312-7.382-7.383-7.382S2.618,5.93,2.618,10S5.93,17.381,10,17.381S17.383,14.07,17.383,10"></path>
+                </svg>
+            </a>
+        
+        
+            <a class="dropdown-icon button" id="btn-dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path>
+                </svg>
+            </a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                <a class="dropback-icon button" id="btn-dropback">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path fill="currentColor" d="M11.469,10l7.08-7.08c0.406-0.406,0.406-1.064,0-1.469c-0.406-0.406-1.063-0.406-1.469,0L10,8.53l-7.081-7.08c-0.406-0.406-1.064-0.406-1.469,0c-0.406,0.406-0.406,1.063,0,1.469L8.531,10L1.45,17.081c-0.406,0.406-0.406,1.064,0,1.469c0.203,0.203,0.469,0.304,0.735,0.304c0.266,0,0.531-0.101,0.735-0.304L10,11.469l7.08,7.081c0.203,0.203,0.469,0.304,0.735,0.304c0.267,0,0.532-0.101,0.735-0.304c0.406-0.406,0.406-1.064,0-1.469L11.469,10z"></path>
+                    </svg>
+                </a>
+                
+                    <a href="/" class="dropdown-menu button">
+                        首页
+                    </a>
+                
+                    <a href="/friends/" class="dropdown-menu button">
+                        友链
+                    </a>
+                
+                    <a href="/about/" class="dropdown-menu button">
+                        关于
+                    </a>
+                
+            </div>
+            <script>
+                document.getElementById('btn-dropdown').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    requestAnimationFrame(() => {
+                        dd.style.display = 'flex';
+                        requestAnimationFrame(() => {
+                            dd.style.transform = 'translateY(0)';
+                            dd.style.opacity = '1';
+                        });
+                    });
+                });
+                document.getElementById('btn-dropback').addEventListener('click', () => {
+                    const dd = document.getElementById('dropdown-menus');
+                    dd.style.transform = 'translateY(2.25rem)';                    
+                    dd.style.opacity = '0';
+                    setTimeout(() => {dd.style.display = 'none';}, 350);
+                });
+            </script>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    <div class="post-title">
+    <h1 class="post-title__text">
+        电路设计中的分治法 —— 以 Chisel 实现优先编码器为例
+    </h1>
+    <div class="post-title__meta">
+        
+            <a href="/archives/2021/01/" class="button" style="color: #808080;">
+    2021-01-02
+</a>
+        
+        
+            
+    <span class="separate-dot"></span><a href="/categories/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" class="button">数字逻辑</a>
+
+ 
+        
+        
+     
+ 
+
+  
+    </div>
+</div>
+
+
+    <div class="post__with-side">
+        <aside class="post-side">
+            <div class="post-side__toc">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%B2%BB%E6%B3%95"><span class="toc-text">分治法</span></a></li></ol>
+            </div>
+        </aside>
+        <article class="post content-card">
+            <div class="post__header">
+                
+                     
+                
+                
+                    
+                
+            </div>
+            <div class="post__content">
+                <div class="md-content">
+                    <p>在实现我的毕业设计时，遇到了这么一个需求：找出一组数字中最低（高）位的 <code>1</code> 的位置 —— 换句话说，就是一个优先编码器。显然最基本的版本实现起来很简单，尤其是我们还是在使用 <code>Chisel</code> 这么个懒人神器的情况下，初代代码如下（仅作为例子，下同），一行就解决了问题。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> <span class="keyword">extends</span> <span class="title">Module</span> </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> io = <span class="type">IO</span>(<span class="keyword">new</span> <span class="type">Bundle</span>() &#123;</span><br><span class="line">    <span class="keyword">val</span> i = <span class="type">Input</span>(<span class="type">UInt</span>(<span class="number">64.</span><span class="type">W</span>))</span><br><span class="line">    <span class="keyword">val</span> o = <span class="type">Output</span>(<span class="type">UInt</span>(log2Ceil(<span class="number">64</span>).<span class="type">W</span>))</span><br><span class="line">  &#125;)</span><br><span class="line">  io.o := <span class="type">PriorityEncoder</span>(io.i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是我们看生成的 Verilog 以及 <code>yosys</code> 的报告，发现资源消耗比较大，时序算下来也能把我血压给拉满。</p>
+<p>以下是生成的 Verilog 的一部分，可以发现就是一组串联的 Mux，时序绝对会爆炸。</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> Example(</span><br><span class="line">  <span class="keyword">input</span>         clock,</span><br><span class="line">  <span class="keyword">input</span>         reset,</span><br><span class="line">  <span class="keyword">input</span>  [<span class="number">63</span>:<span class="number">0</span>] io_i,</span><br><span class="line">  <span class="keyword">output</span> [<span class="number">5</span>:<span class="number">0</span>]  io_o</span><br><span class="line">);</span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_64 = io_i[<span class="number">62</span>] ? <span class="number">6&#x27;h3e</span> : <span class="number">6&#x27;h3f</span>; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_65 = io_i[<span class="number">61</span>] ? <span class="number">6&#x27;h3d</span> : <span class="number">_</span>io_o_T_64; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_66 = io_i[<span class="number">60</span>] ? <span class="number">6&#x27;h3c</span> : <span class="number">_</span>io_o_T_65; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_67 = io_i[<span class="number">59</span>] ? <span class="number">6&#x27;h3b</span> : <span class="number">_</span>io_o_T_66; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_121 = io_i[<span class="number">5</span>] ? <span class="number">6&#x27;h5</span> : <span class="number">_</span>io_o_T_120; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_122 = io_i[<span class="number">4</span>] ? <span class="number">6&#x27;h4</span> : <span class="number">_</span>io_o_T_121; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_123 = io_i[<span class="number">3</span>] ? <span class="number">6&#x27;h3</span> : <span class="number">_</span>io_o_T_122; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_124 = io_i[<span class="number">2</span>] ? <span class="number">6&#x27;h2</span> : <span class="number">_</span>io_o_T_123; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">wire</span> [<span class="number">5</span>:<span class="number">0</span>] <span class="number">_</span>io_o_T_125 = io_i[<span class="number">1</span>] ? <span class="number">6&#x27;h1</span> : <span class="number">_</span>io_o_T_124; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line">  <span class="keyword">assign</span> io_o = io_i[<span class="number">0</span>] ? <span class="number">6&#x27;h0</span> : <span class="number">_</span>io_o_T_125; <span class="comment">// @[Mux.scala 47:69]</span></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="分治法"><a href="#分治法" class="headerlink" title="分治法"></a>分治法</h3><p>后来我意识到，可以把分治思想应用到我们的电路中，也就是把输入分为左右两部分，分别处理，这样应该能把之前的串联的 $O(N)$ 层 Mux 串起来的电路转化为 $O(log N)$ 层的电路，以此可以获得更好的时序。话不多说，直接看代码，相信大家都可以看懂。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">BinaryPriorityEncoder</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>(in: <span class="type">Bits</span>): <span class="type">Valid</span>[<span class="type">UInt</span>] = &#123;</span><br><span class="line">    require(in.getWidth &gt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">val</span> roundedInputWidth = <span class="number">1</span> &lt;&lt; log2Ceil(in.getWidth)</span><br><span class="line">    print(roundedInputWidth)</span><br><span class="line">    <span class="keyword">val</span> roundedInput = <span class="type">Wire</span>(<span class="type">UInt</span>(roundedInputWidth.<span class="type">W</span>))</span><br><span class="line">    roundedInput := in</span><br><span class="line">    checkedApply(roundedInput, roundedInputWidth)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">checkedApply</span></span>(in: <span class="type">UInt</span>, width: <span class="type">Int</span>): <span class="type">Valid</span>[<span class="type">UInt</span>] = &#123;</span><br><span class="line">    <span class="keyword">val</span> outputWidth = log2Ceil(width)</span><br><span class="line">    <span class="keyword">val</span> result = <span class="type">Wire</span>(<span class="type">Valid</span>(<span class="type">UInt</span>(outputWidth.<span class="type">W</span>)))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (width == <span class="number">2</span>) &#123;</span><br><span class="line">      <span class="keyword">val</span> idx = in(<span class="number">1</span>) &amp;&amp; (~in(<span class="number">0</span>)).asBool</span><br><span class="line">      <span class="keyword">val</span> valid = in.orR()</span><br><span class="line">      result.bits := idx</span><br><span class="line">      result.valid := valid</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">val</span> leftWidth = width &gt;&gt; <span class="number">1</span></span><br><span class="line">      <span class="keyword">val</span> leftResult = checkedApply(in(leftWidth - <span class="number">1</span>, <span class="number">0</span>), leftWidth)</span><br><span class="line">      <span class="keyword">val</span> rightResult = checkedApply(in(width - <span class="number">1</span>, leftWidth), leftWidth)</span><br><span class="line"></span><br><span class="line">      result.valid := leftResult.valid || rightResult.valid</span><br><span class="line">      result.bits := <span class="type">Mux</span>(leftResult.valid, leftResult.bits, <span class="type">Cat</span>(rightResult.valid, rightResult.bits))</span><br><span class="line">    &#125;</span><br><span class="line">    result</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过验证，结果一致。</p>
+
+                </div>
+            </div>
+            
+                 
+            
+            
+                <div class="post-meta post-footer__meta">
+    <p>
+        最后更新于：2021-01-02
+    </p>
+</div> 
+            
+            
+                <div class="post-cats post-card__cats">
+    
+        <a href="/categories/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" class="post-cats__link button">数字逻辑</a>
+    
+    
+        <a href="/tags/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91%E8%AE%BE%E8%AE%A1%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90/" class="post-tags__link button"># 数字逻辑设计与计算机组成</a>
+    
+</div> 
+             
+        </article>
+        
+            <div class="post__comments content-card">
+                
+    <h4 style="margin-top: 0;">评论</h4>
+    
+    
+        <div id="valine_container" class="valine_thread"></div>
+    
+    
+    
+    
+    
+    
+    
+
+
+            </div>
+        
+    </div>
+
+
+</main>
+<footer class="footer">
+     
+
+
+     
+  
+    
+        
+            <p>⌨️ with ❤️ by name1e5s</p>
+
+        
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+
+        </div>
+        
+
+ 
+
+ 
+
+ 
+
+  
+
+
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.4.1/dist/jquery.fancybox.min.js"></script>
+
+<script>
+    let lazyloadT = Boolean(''),
+        auto_fancybox = Boolean('true')
+    if (auto_fancybox) {
+        $(".post__content").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    } else {
+        $(".post__content").find("fancybox").find('img').each(function () {
+            var element = document.createElement("a");
+            $(element).attr("data-fancybox", "gallery");
+            $(element).attr("href", $(this).attr("src"));
+            if (lazyloadT) {
+                $(element).attr("href", $(this).attr("data-srcset"));
+            }
+            $(this).wrap(element);
+        });
+    }
+</script>
+ 
+ 
+
+ 
+    
+<script src="/js/b2t.js"></script>
+
+
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                source: {
+                    '[tex]/amsCd': '[tex]/amscd',
+                    '[tex]/AMScd': '[tex]/amscd'
+                }
+            },
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams'
+            },
+            options: {
+                renderActions: {
+                    findScript: [10, doc => {
+                        document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                            const display = !!node.type.match(/; *mode=display/);
+                            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                            const text = document.createTextNode('');
+                            node.parentNode.replaceChild(text, node);
+                            math.start = {node: text, delim: '', n: 0};
+                            math.end = {node: text, delim: '', n: 0};
+                            doc.math.push(math);
+                        });
+                    }, '', false],
+                    insertedScript: [200, () => {
+                        document.querySelectorAll('mjx-container').forEach(node => {
+                            let target = node.parentNode;
+                            if (target.nodeName.toLowerCase() === 'li') {
+                                target.parentNode.classList.add('has-jax');
+                            }
+                        });
+                    }, '', false]
+                }
+            }
+        };
+        (function () {
+            var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.startup.document.state(0);
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+    
+    
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+
+        <script>
+            var valineConfig = {"enable":true,"appId":"eGiyDKdVDXYyroLSQ2l1kWQo-gzGzoHsz","appKey":"OUCC7PiGGX7dXQ6VQfXPiJeM","placeholder":null,"path":null,"avatar":null,"meta":["nick","mail","link"],"pageSize":null,"lang":null,"visitor":null,"highlight":null,"avatarForce":null,"recordIP":null,"serverURLs":null,"enableQQ":null,"requiredFields":["nick","mail"],"emojiCDN":null,"emojiMaps":null};
+            valineConfig.el = '#valine_container';
+            for (var i in valineConfig) {
+                if (valineConfig[i] === null) delete valineConfig[i];
+            }
+            new Valine(valineConfig);
+        </script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+
+    </body>
+</html>

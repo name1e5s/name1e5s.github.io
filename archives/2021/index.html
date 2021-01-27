@@ -187,9 +187,10 @@
         
             <div class="md-content">
                 
-                    <p>
-                        在实现我的毕业设计时，遇到了这么一个需求：找出一组数字中最低（高）位的 1 的位置 —— 换句话说，就是一个优先编码器。显然最基本的版本实现起来很简单，尤其是我们还是在使用 Chisel 这么个懒人神器的情况下，初代代码如下（仅作为例子...
-                    </p>
+                    <p>在实现我的毕业设计时，遇到了这么一个需求：找出一组数字中最低（高）位的 <code>1</code> 的位置 —— 换句话说，就是一个优先编码器。显然最基本的版本实现起来很简单，尤其是我们还是在使用 <code>Chisel</code> 这么个懒人神器的情况下，初代代码如下（仅作为例子，下同），一行就解决了问题。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> <span class="keyword">extends</span> <span class="title">Module</span> </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> io = <span class="type">IO</span>(<span class="keyword">new</span> <span class="type">Bundle</span>() &#123;</span><br><span class="line">    <span class="keyword">val</span> i = <span class="type">Input</span>(<span class="type">UInt</span>(<span class="number">64.</span><span class="type">W</span>))</span><br><span class="line">    <span class="keyword">val</span> o = <span class="type">Output</span>(<span class="type">UInt</span>(log2Ceil(<span class="number">64</span>).<span class="type">W</span>))</span><br><span class="line">  &#125;)</span><br><span class="line">  io.o := <span class="type">PriorityEncoder</span>(io.i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是我们看生成的 Verilog 以及 <code>yosys</code> 的报告，发现资源消耗比较大，时序算下来也能把我血压给拉满。</p>
                 
             </div>
         

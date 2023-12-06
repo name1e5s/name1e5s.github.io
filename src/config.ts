@@ -1,9 +1,9 @@
 import type { Site, SocialObjects } from "./types";
 
 export const SITE: Site = {
-  website: "https://astro-paper.pages.dev/", // replace this with your deployed domain
+  website: "https://blog.hai-hs.in/", // replace this with your deployed domain
   author: "Hai-hsin",
-  desc: "分け入っても分け入っても青い山.",
+  desc: "分け入っても分け入っても青い山",
   title: "🐟",
   ogImage: "assets/forrest-gump-quote.webp",
   lightAndDarkMode: true,
@@ -22,7 +22,7 @@ export const LOGO_IMAGE = {
 export const SOCIALS: SocialObjects = [
   {
     name: "Github",
-    href: "https://github.com/satnaing/astro-paper",
+    href: "https://github.com/name1e5s",
     linkTitle: ` ${SITE.title} on Github`,
     active: true,
   },

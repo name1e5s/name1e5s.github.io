@@ -26,8 +26,8 @@ const next = pageNum < totalPages ? "" : "disabled";
   <Main pageTitle="Posts" pageDesc="满纸荒唐言">
     <ul>
       {
-        posts.map(({ data }) => (
-          <Card href={`/posts/${slugify(data)}`} frontmatter={data} />
+        posts.map((p) => (
+          <Card href={`/posts/${slugify(p)}`} frontmatter={p.data} />
         ))
       }
     </ul>

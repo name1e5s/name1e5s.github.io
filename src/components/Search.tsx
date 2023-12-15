@@ -7,7 +7,7 @@ import type { CollectionEntry } from "astro:content";
 export type SearchItem = {
   title: string;
   description: string;
-  data: CollectionEntry<"blog">["data"];
+  inner: CollectionEntry<"blog">;
 };
 
 interface Props {
@@ -111,9 +111,9 @@ export default function SearchBar({ searchList }: Props) {
         {searchResults &&
           searchResults.map(({ item, refIndex }) => (
             <Card
-              href={`/posts/${slugify(item.data)}`}
-              frontmatter={item.data}
-              key={`${refIndex}-${slugify(item.data)}`}
+              href={`/posts/${slugify(item.inner)}`}
+              frontmatter={item.inner.data}
+              key={`${refIndex}-${slugify(item.inner)}`}
             />
           ))}
       </ul>

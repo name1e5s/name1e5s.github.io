@@ -5,7 +5,7 @@ title: "About"
 
 Hi there! Welcome to my site. 
 
-My name is Haixin Yu. I'm a graduate student in the Department of Computer Science and Engineering at BUPT, currently working as a software engineer intern at [Lark Suite](https://www.larksuite.com/). I love building systems for fun and learning new things. Here is my [resume(Chinese)](https://github.com/name1e5s/resume/raw/zh_CN/resume-zh_CN.pdf).
+My name is Hai-hsin Yu, an incoming Infrastructure Engineer at [Alibaba Cloud](https://github.com/aliyun), X-Dragon Team.
 
 ### 友情链接
 

@@ -5,7 +5,7 @@ export const SITE: Site = {
   author: "Hai-hsin",
   desc: "分け入っても分け入っても青い山",
   title: "🐟",
-  ogImage: "assets/forrest-gump-quote.webp",
+  ogImage: "forrest-gump-quote.jpg",
   lightAndDarkMode: true,
   postPerPage: 5,
 };

@@ -1,7 +1,7 @@
 ---
 title: Notes on SpinalHDL Pipeline API
 description: Simple usages and internals of Spinal Pipeline API.
-pubDatetime: 2023-02-23T22:04:58+08:00
+pubDatetime: 2023-02-23T22:04:58
 tags:
     - SpinalHDL
     - Pipeline

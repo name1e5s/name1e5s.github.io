@@ -1,6 +1,6 @@
 ---
 title: Hello World
-pubDatetime: 2018-02-18T17:16:50+08:00
+pubDatetime: 2018-02-18T17:16:50
 description: Hello World.
 ---
 

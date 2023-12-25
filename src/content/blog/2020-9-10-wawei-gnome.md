@@ -1,7 +1,7 @@
 ---
 title: 在 openEuler 上安装桌面环境
 description: 华为的操作系统真不行👋。
-pubDatetime: 2020-09-10T03:22:00+08:00
+pubDatetime: 2020-09-10T03:22:00
 tags:
     - openEuler
 ---

@@ -1,7 +1,7 @@
 ---
 title: 使用 C/C++ 模拟 defer 关键字
 description: 如何使用 C/C++ 中的析构逻辑模拟 Go 语言中的 defer 关键字。
-pubDatetime: 2018-04-01T18:54:36+08:00
+pubDatetime: 2018-04-01T18:54:36
 tags:
     - Go 语言
 ---

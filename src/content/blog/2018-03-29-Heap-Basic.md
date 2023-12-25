@@ -1,7 +1,7 @@
 ---
 title: 详解二叉堆（基础篇）
 description: 对于堆这一数据结构的基础介绍。
-pubDatetime: 2018-03-29T21:22:53+08:00
+pubDatetime: 2018-03-29T21:22:53
 tags:
     - C
 ---

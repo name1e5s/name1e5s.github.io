@@ -1,7 +1,7 @@
 ---
 title: NES 模拟器实现指南（零）
 description: NES 模拟器简介，以及 iNES 文件格式的读取。
-pubDatetime: 2018-02-25T21:30:01+08:00
+pubDatetime: 2018-02-25T21:30:01
 tags:
     - NES
     - Go 语言

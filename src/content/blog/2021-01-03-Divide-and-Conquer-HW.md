@@ -1,7 +1,7 @@
 ---
 title: 电路设计中的分治法 —— 以 Chisel 实现优先编码器为例
 description: 用 Chisel 的生成逻辑快速生成基于分治逻辑的优先编码器。
-pubDatetime: 2021-01-03T19:25:05+08:00
+pubDatetime: 2021-01-03T19:25:05
 tags:
     - 数字逻辑设计与计算机组成
 ---

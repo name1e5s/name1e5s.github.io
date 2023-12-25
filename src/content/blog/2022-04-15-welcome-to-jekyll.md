@@ -1,7 +1,7 @@
 ---
 title:  Welcome to Jekyll!
 description: Haha!
-pubDatetime:   2022-04-15T00:04:50+08:00
+pubDatetime:   2022-04-15T00:04:50
 tags:
     - 杂谈
 ---

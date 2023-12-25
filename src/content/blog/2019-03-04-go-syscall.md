@@ -1,7 +1,7 @@
 ---
 title: Go 语言系统调用
 description: 使用 Go 语言直接调用 Linux 上的系统调用。
-pubDatetime: 2019-03-04T18:32:25+08:00
+pubDatetime: 2019-03-04T18:32:25
 tags:
     - Go 语言
 ---

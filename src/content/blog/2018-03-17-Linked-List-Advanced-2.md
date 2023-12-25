@@ -1,7 +1,7 @@
 ---
 title: 详解 C 语言链表（应用篇） -- 浅析 Linux kernel 中的 list.h 头文件（二）
 description: 对于 Linux Kernel 中链表结构的介绍。
-pubDatetime: 2018-03-17T21:00:00+08:00
+pubDatetime: 2018-03-17T21:00:00
 tags:
     - C
 ---

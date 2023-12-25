@@ -1,7 +1,7 @@
 ---
 title: 详解并查集（基础篇）
 description: 对于并查集这一数据结构的基础介绍。
-pubDatetime: 2018-04-04T19:20:53+08:00
+pubDatetime: 2018-04-04T19:20:53
 tags:
     - C
 ---

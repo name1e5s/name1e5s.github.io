@@ -1,7 +1,7 @@
 ---
 title: SpinalHDL 现已加入对 VCS 以及 Vivado 的支持
 description: 一些更新介绍。
-pubDatetime: 2022-05-07T22:04:58+08:00
+pubDatetime: 2022-05-07T22:04:58
 tags: 
     - Spinal
 ---

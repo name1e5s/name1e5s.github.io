@@ -1,7 +1,7 @@
 ---
 title:  Moving to Astro
 description: 改用 AstroPaper 来做博客了。
-pubDatetime: 2023-12-21T23:59:59+08:00
+pubDatetime: 2023-12-21T23:59:59
 tags:
     - 杂谈
 ---

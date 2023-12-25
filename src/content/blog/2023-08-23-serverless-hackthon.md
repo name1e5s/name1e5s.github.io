@@ -1,7 +1,7 @@
 ---
 title: Serverless性能优化挑战赛参赛总结
 description: 如何恰到索尼耳机的。
-pubDatetime: 2023-08-23T21:04:58+08:00
+pubDatetime: 2023-08-23T21:04:58
 tags:
     - Rust
 ---

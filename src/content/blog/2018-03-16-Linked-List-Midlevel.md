@@ -1,7 +1,7 @@
 ---
 title: 详解 C 语言链表（实践篇）
 description: C 语言链表相关的实践介绍。
-pubDatetime: 2018-03-16T21:22:53+08:00
+pubDatetime: 2018-03-16T21:22:53
 tags:
     - C
 ---

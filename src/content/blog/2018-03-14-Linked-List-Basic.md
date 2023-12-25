@@ -1,7 +1,7 @@
 ---
 title: 详解 C 语言链表（基础篇）
 description: C 语言链表结构的基础介绍。
-pubDatetime: 2018-03-14T21:22:53+08:00
+pubDatetime: 2018-03-14T21:22:53
 tags:
     - C
 ---

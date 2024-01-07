@@ -3,15 +3,15 @@ title: Notes on SpinalHDL Pipeline API
 description: Simple usages and internals of Spinal Pipeline API.
 pubDatetime: 2023-02-23T22:04:58
 tags:
-    - SpinalHDL
-    - Pipeline
+  - SpinalHDL
+  - Pipeline
 ---
 
 ## Table of contents
 
-##  Introduction
+## Introduction
 
-My master's graduate project is to build a RISC-V processor, [Trimurti](https://github.com/name1e5s/Trimurti), with some special features to boost performance of the inference task.  I've built a MIPS core in traditional HDL like system verilog, and boot a OS on the system successfully. But building a complex circuit with such a prehistoric language was a suffering process, you need to maintain port definitions in different modules, define wires and connect ports by yourself, all those tasks needs to do **MANUALLY**. It took me about two weeks to find a cache bug caused by a typo on module connection. In this project, I decided to build the processor with a Scala-based modern hardware construct language, [SpinalHDL](https://spinalhdl.github.io/SpinalDoc-RTD/master/index.html). Its [`Pipeline`](https://github.com/SpinalHDL/SpinalHDL/blob/dev/lib/src/main/scala/spinal/lib/pipeline/Pipeline.scala#L11) API allows the definition of flexible pipelines, but I can't find document about how to use `Pipeline`, and what's happening under the hood. The goal of this article is to explain the design and usage of `Pipeline` and associate classes, with some backgrounds and example codes.
+My master's graduate project is to build a RISC-V processor, [Trimurti](https://github.com/name1e5s/Trimurti), with some special features to boost performance of the inference task. I've built a MIPS core in traditional HDL like system verilog, and boot a OS on the system successfully. But building a complex circuit with such a prehistoric language was a suffering process, you need to maintain port definitions in different modules, define wires and connect ports by yourself, all those tasks needs to do **MANUALLY**. It took me about two weeks to find a cache bug caused by a typo on module connection. In this project, I decided to build the processor with a Scala-based modern hardware construct language, [SpinalHDL](https://spinalhdl.github.io/SpinalDoc-RTD/master/index.html). Its [`Pipeline`](https://github.com/SpinalHDL/SpinalHDL/blob/dev/lib/src/main/scala/spinal/lib/pipeline/Pipeline.scala#L11) API allows the definition of flexible pipelines, but I can't find document about how to use `Pipeline`, and what's happening under the hood. The goal of this article is to explain the design and usage of `Pipeline` and associate classes, with some backgrounds and example codes.
 
 ## Traditional Processor Pipeline
 
@@ -19,8 +19,9 @@ It's helpful to know how pipeline is designed in traditional RISC-V processor be
 
 ![RI5CY Pipeline](https://docs.openhwgroup.org/projects/cv32e40p-user-manual/en/latest/_images/CV32E40P_Pipeline.png "RI5CY Pipeline")
 
-If you look at the rtl directory, you'll see the stages and their build blocks appeared in pipeline graph immediately. You can find `cv32e40p_ex_stage`, `cv32e40p_id_stage`, `cv32e40p_if_stage` and `cv32e40p_load_store_unit`, and you can expect which stage  the `alu`, `decoder` or `prefetch` is located in. Finally all those units are connected together in `cv32e40p_core`.
-```
+If you look at the rtl directory, you'll see the stages and their build blocks appeared in pipeline graph immediately. You can find `cv32e40p_ex_stage`, `cv32e40p_id_stage`, `cv32e40p_if_stage` and `cv32e40p_load_store_unit`, and you can expect which stage the `alu`, `decoder` or `prefetch` is located in. Finally all those units are connected together in `cv32e40p_core`.
+
+```java
 rtl
 ├── cv32e40p_aligner.sv
 ├── cv32e40p_alu.sv
@@ -52,14 +53,16 @@ rtl
 ├── ...
 ```
 
-A direct code organization, right? We may have been designing processor pipeline this way before `verilog` was invented. But such a pipeline is a typical **high cohesion** design. Codes to implement same functionality spreads everywhere. For example the M extension, we can find decode logic in ID stage, real execute logic in EX stage, and write back logic in WB stage. Lots of registers, ports and wires across pipeline is added to connect these logic. The more functionality we add, the more ports, registers and wires you need to maintain. When the pipeline has few stages, and the logic is clear, maintaining those connectors is not a big task. However, when you want to build a highly configurable pipeline. with lots functionality in the pipeline, maintenance would become a nightmare for everyone. Fortunately, SpinalHDL gives us an alternative way to build pipeline with less mind complexity. 
+A direct code organization, right? We may have been designing processor pipeline this way before `verilog` was invented. But such a pipeline is a typical **high cohesion** design. Codes to implement same functionality spreads everywhere. For example the M extension, we can find decode logic in ID stage, real execute logic in EX stage, and write back logic in WB stage. Lots of registers, ports and wires across pipeline is added to connect these logic. The more functionality we add, the more ports, registers and wires you need to maintain. When the pipeline has few stages, and the logic is clear, maintaining those connectors is not a big task. However, when you want to build a highly configurable pipeline. with lots functionality in the pipeline, maintenance would become a nightmare for everyone. Fortunately, SpinalHDL gives us an alternative way to build pipeline with less mind complexity.
 
 ![Traditional Pipeline Design, Grouped by Functionality](https://raw.githubusercontent.com/name1e5s/article/master/pic/trad-pipeline.png "Traditional Pipeline Design, Grouped by Functionality")
-##  VexRiscv Processor Pipeline
+
+## VexRiscv Processor Pipeline
 
 `Pipeline` in [`VexRiscv`](https://github.com/SpinalHDL/VexRiscv/) can considered as a previous version of the one in SpinalHDL lib, it gives us some basic ideas about how to group things for the same functionality together. `VexRiscv` is built with a generic pipeline contains some stages and plugins which implements some real decode/execute logic, etc.
 
 Let's start with the definition of [`Stage` and `Stagable`](https://github.com/SpinalHDL/VexRiscv/blob/master/src/main/scala/vexriscv/Stage.scala).
+
 ```scala
 class Stageable[T <: Data](_dataType: => T) extends HardType[T](_dataType) with Nameable {
     def dataType = apply()
@@ -79,9 +82,11 @@ class Stage() extends Area{
   ...
 }
 ```
+
 `Stageable` is a wrapper around common `HardType[Data]` types, used as a key to index through hash maps. `Satage` defines a `inputs`, `outputs`, `signals`, `inserts` for a stage. No magic here, just some definitions of I/O ports and some helper functions to insert keys to hash maps and returns a wire for the key.
 
 Then the `Pipeline` itself.
+
 ```scala
 trait Pipeline {
   type T <: Pipeline
@@ -96,6 +101,7 @@ trait Pipeline {
   Component.current.addPrePopTask(() => build())
 }
 ```
+
 `Pipeline` is a trait, which defines a `plugins` and `stages` for a pipeline. `build` is a function to connect all the logic together. It's called before `pop` the component. `build` does the following things:
 
 1. build all the plugins to insert keys and logics to stages
@@ -106,6 +112,7 @@ trait Pipeline {
 6. connect previous stage's output to current stage's input for all the keys in `inputs` and `outputs` in a stage, with registers inserted.
 
 This means, if you want to produce some data from stage A, and use it in stage B after A, you can simply derive a class from `Stagable` and insert it into stage A, then use it by query with `input` method in stage B. `Pipeline` will insert the necessary wires and registers to connect them together. A simple example is shown below, which adds 2 to the input and output the result after 4 stages.
+
 ```scala
 class VexRiscVPipelineExample extends Component with Pipeline {
   type T = VexRiscVPipelineExample
@@ -132,6 +139,7 @@ class VexRiscVPipelineExample extends Component with Pipeline {
 ```
 
 Combining `Pipeline` and `Stage`, we've successfully reduce the ports and wires we need to maintain in a pipeline. However, we still need to write code for different functionality in same `Component`. This is where `Plugin` comes in.
+
 ```scala
 trait Plugin[T <: Pipeline] extends Nameable {
   var pipeline: T = null.asInstanceOf[T]
@@ -149,7 +157,9 @@ trait Plugin[T <: Pipeline] extends Nameable {
   }
 }
 ```
+
 `Plugin` gives us a way to group logic for same functionality together. It split the logic into two parts, `setup` and `build`. `setup` is used to interact with other plugins, such as adding how to decode a new instruction to decoder plugin, and `build` is used to flush the hardware. `Plugin` also provides a `plug` method to mark which stage the logic is inserted. When we use the Plugin style to implement the example above, we can do it like this:
+
 ```scala
 class VexRiscVPluginExample extends Plugin[VexRiscVPipelineExample] {
   override def build(pipeline: VexRiscVPipelineExample): Unit = {
@@ -192,8 +202,8 @@ class VexRiscVPipelineExample extends Component with Pipeline {
   val stageB = newStage().setName("B")
 }
 ```
-Finally, we can build a processor with code grouped by functionality, and the pipeline is automatically connected together. For more examples, check out the [`VexRiscv`](https://github.com/SpinalHDL/VexRiscv/).
 
+Finally, we can build a processor with code grouped by functionality, and the pipeline is automatically connected together. For more examples, check out the [`VexRiscv`](https://github.com/SpinalHDL/VexRiscv/).
 
 ## SpinalHDL Pipeline
 
@@ -202,6 +212,7 @@ SpinalHDL pipeline is an experimental feature, first intodoced in SpinalHDL 1.7.
 ### `ConnectionLogic`
 
 SpinalHDL `Pipeline` introduces `ConnectionLogic` to define how the stages is connected. The trait is like this:
+
 ```scala
 // abstraction of ports need to be connected across stages
 case class ConnectionPoint(valid: Bool, ready: Bool, payload: Seq[Data]) extends Nameable
@@ -217,6 +228,7 @@ trait ConnectionLogic extends Nameable with OverridedEqualsHashCode {
   def withPayload: Boolean = true
 }
 ```
+
 It defines how the master stage is connected to the slave stage. The `on` method is called when the master stage is connected to the slave stage. SpinalHDL also gives us some default implementation:
 
 - `Connection.DIRECT`: connect last stage's output to current stage's input directly, without any buffer or register
@@ -228,6 +240,7 @@ For common usage, `Commection.M2S` is enough. However, if you want to build a co
 ### Examples
 
 With lots of implicit conversions, now we can build stages like common components. The following example shows how to add 2 to the input and output the result after 4 stages with new `Pipeline` api.
+
 ```scala
 class SpinalHDLPipelineExample extends Module {
   val input = in UInt(32 bits)

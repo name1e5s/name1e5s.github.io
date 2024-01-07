@@ -7,13 +7,13 @@ import siteOgImage from "./og-templates/site";
 const fetchFonts = async () => {
   // Regular Font
   const fontFileRegular = await fetch(
-    "https://www.1001fonts.com/download/font/ibm-plex-mono.regular.ttf"
+    "https://github.com/name1e5s/name1e5s.github.io/releases/download/misans/MiSans-Regular.woff"
   );
   const fontRegular: ArrayBuffer = await fontFileRegular.arrayBuffer();
 
   // Bold Font
   const fontFileBold = await fetch(
-    "https://www.1001fonts.com/download/font/ibm-plex-mono.bold.ttf"
+    "https://github.com/name1e5s/name1e5s.github.io/releases/download/misans/MiSans-Demibold.woff"
   );
   const fontBold: ArrayBuffer = await fontFileBold.arrayBuffer();
 
@@ -25,16 +25,16 @@ const { fontRegular, fontBold } = await fetchFonts();
 const options: SatoriOptions = {
   width: 1200,
   height: 630,
-  embedFont: false,
+  embedFont: true,
   fonts: [
     {
-      name: "IBM Plex Mono",
+      name: "MiSans",
       data: fontRegular,
       weight: 400,
       style: "normal",
     },
     {
-      name: "IBM Plex Mono",
+      name: "MiSans",
       data: fontBold,
       weight: 600,
       style: "normal",
@@ -42,18 +42,12 @@ const options: SatoriOptions = {
   ],
 };
 
-function svgBufferToPngBuffer(svg: string) {
-  const resvg = new Resvg(svg);
-  const pngData = resvg.render();
-  return pngData.asPng();
-}
-
 export async function generateOgImageForPost(post: CollectionEntry<"blog">) {
   const svg = await satori(postOgImage(post), options);
-  return svgBufferToPngBuffer(svg);
+  return svg;
 }
 
 export async function generateOgImageForSite() {
   const svg = await satori(siteOgImage(), options);
-  return svgBufferToPngBuffer(svg);
+  return svg;
 }

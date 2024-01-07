@@ -12,6 +12,7 @@ export const SITE: Site = {
 
 export const LOCALE = ["zh-CN"]; // set to [] to use the environment default
 export const FIRST_LOCALE = LOCALE[0];
+export const TIME_LOCALE = "en-US";
 
 export const LOGO_IMAGE = {
   enable: false,

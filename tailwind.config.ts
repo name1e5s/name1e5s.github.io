@@ -1,4 +1,9 @@
-function withOpacity(variableName) {
+import { FONT_MONO, FONT_SANS } from './src/config.ts';
+
+type OpacityValue = number | undefined;
+type OpacityFunction = (options: { opacityValue?: OpacityValue }) => string;
+
+function withOpacity(variableName: string): OpacityFunction {
   return ({ opacityValue }) => {
     if (opacityValue !== undefined) {
       return `rgba(var(${variableName}), ${opacityValue})`;
@@ -57,7 +62,8 @@ module.exports = {
       transparent: "transparent",
     },
     fontFamily: {
-      mono: ["IBM Plex Mono", "monospace"],
+      sans: FONT_SANS,
+      mono: FONT_MONO,
     },
     // },
   },

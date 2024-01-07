@@ -1,9 +1,9 @@
 ---
-title: Serverless性能优化挑战赛参赛总结
+title: Serverless 性能优化挑战赛参赛总结
 description: 如何恰到索尼耳机的。
 pubDatetime: 2023-08-23T21:04:58
 tags:
-    - Rust
+  - Rust
 ---
 
 ## Table of contents
@@ -235,7 +235,7 @@ impl CellFactory<MixedCell> for SimpleMixedCellFactory {
 
 我们的 2.0 策略实现的不错，靠着这么一个策略外加上手速上的先发制人，两周的赛程里我们在榜一肆虐了大约一周半。但是，随着后半段大家成绩的继续提升，我们这么个策略显得不够看了起来。我们开始尝试一些基于预测的策略，但是效果不是很优秀（真的没有做机器学习的天赋🥹）。直到某一天回看比赛的评分标准：
 
-- 总分 =（请求执行总消耗/Slot 总消耗 + 请求执行总时间/(调度总时间 + 请求执行总时间)）* 100/2
+- 总分 =（请求执行总消耗/Slot 总消耗 + 请求执行总时间/(调度总时间 + 请求执行总时间)）\* 100/2
 
 如果我们在最开始就申请无限个 Slot，那么就靠着 0 分的资源分和 50 分的调度分，我们也可以拿到一个 50 分。换言之，低于 50 分的优化都可以被替换掉了。再一看我们 47 分的数据集 1，顿觉还有救。最终，我们基于预分配的算法做了如下优化：
 
@@ -253,12 +253,10 @@ impl CellFactory<MixedCell> for SimpleMixedCellFactory {
 
 下面是我们参与决赛答辩的 PPT，供大家参考。同时，参赛代码也已经开源在 [Github](https://github.com/name1e5s/scaler-rust)。
 
-<div>
+<div class="mx-auto w-full max-w-3xl px-4 pb-12">
     <object
     data='/assets/Serverless.pdf'
     type="application/pdf"
-    width="720"
-    height="480"
     >
     </object>
 </div>

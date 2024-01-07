@@ -40,3 +40,8 @@ export type SocialMedia =
   | "Steam"
   | "Telegram"
   | "Mastodon";
+
+export type Fonts = {
+  name: string;
+  url: string;
+}[];

@@ -7,26 +7,39 @@ import sitemap from "@astrojs/sitemap";
 import { SITE } from "./src/config";
 
 import mdx from "@astrojs/mdx";
+import { remarkReadingTime } from "./src/utils/remark/readingTime.mjs";
 
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
-  integrations: [tailwind({
-    applyBaseStyles: false
-  }), react(), sitemap(), mdx()],
+  integrations: [
+    tailwind({
+      applyBaseStyles: false,
+    }),
+    react(),
+    sitemap(),
+    mdx(),
+  ],
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, {
-      test: "Table of contents"
-    }]],
+    remarkPlugins: [
+      remarkToc,
+      remarkReadingTime,
+      [
+        remarkCollapse,
+        {
+          test: "Table of contents",
+        },
+      ],
+    ],
     shikiConfig: {
       theme: "one-dark-pro",
-      wrap: true
-    }
+      wrap: true,
+    },
   },
   vite: {
     optimizeDeps: {
-      exclude: ["@resvg/resvg-js"]
-    }
+      exclude: ["@resvg/resvg-js"],
+    },
   },
-  scopedStyleStrategy: "where"
+  scopedStyleStrategy: "where",
 });

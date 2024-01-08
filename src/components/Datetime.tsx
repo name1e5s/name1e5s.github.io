@@ -4,19 +4,15 @@ export interface Props {
   datetime: string | Date;
   size?: "sm" | "lg";
   className?: string;
+  readingTime?: string;
 }
 
-export default function Datetime({ datetime, size = "sm", className }: Props) {
-  return (
-    <div className={`flex items-center space-x-2 opacity-80 ${className}`}>
-      <span className={`${size === "sm" ? "text-sm" : "text-base"}`}>
-        <FormattedDatetime datetime={datetime} />
-      </span>
-    </div>
-  );
-}
-
-const FormattedDatetime = ({ datetime }: { datetime: string | Date }) => {
+export default function Datetime({
+  datetime,
+  readingTime,
+  size = "sm",
+  className,
+}: Props) {
   const myDatetime = new Date(datetime);
 
   const date = myDatetime.toLocaleDateString(TIME_LOCALE, {
@@ -24,6 +20,11 @@ const FormattedDatetime = ({ datetime }: { datetime: string | Date }) => {
     month: "short",
     day: "numeric",
   });
-
-  return <>{date}</>;
-};
+  return (
+    <div className={`flex items-center space-x-2 opacity-80 ${className}`}>
+      <span className={`${size === "sm" ? "text-sm" : "text-base"}`}>
+        {date} {readingTime && <span>| {readingTime}</span>}
+      </span>
+    </div>
+  );
+}

@@ -16,13 +16,14 @@ const { post } = Astro.props;
 const { title, author, description, ogImage, canonicalURL, pubDatetime, tags } =
   post.data;
 
-const { Content } = await post.render();
+const { Content, remarkPluginFrontmatter } = await post.render();
 
 const ogImageUrl = typeof ogImage === "string" ? ogImage : ogImage?.src;
 const ogUrl = new URL(
   ogImageUrl ?? `/posts/${slugifyStr(title)}.svg`,
   Astro.url.origin
 ).href;
+const readingTime: string | undefined = remarkPluginFrontmatter?.readingTime;
 ---
 
 <Layout
@@ -47,7 +48,7 @@ const ogUrl = new URL(
   </div>
   <main id="main-content">
     <h1 transition:name={slugifyStr(title)} class="post-title">{title}</h1>
-    <Datetime datetime={pubDatetime} size="lg" className="my-2" />
+    <Datetime datetime={pubDatetime} readingTime={readingTime} size="lg" className="my-2" />
     <article id="article" role="article" class="prose mx-auto mt-8 max-w-3xl">
       <Content />
     </article>

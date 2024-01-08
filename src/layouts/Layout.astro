@@ -11,6 +11,7 @@ export interface Props {
   description?: string;
   ogImage?: string;
   canonicalURL?: string;
+  scrollSmooth?: boolean;
 }
 
 const {
@@ -19,6 +20,7 @@ const {
   description = SITE.desc,
   ogImage = SITE.ogImage,
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+  scrollSmooth = false,
 } = Astro.props;
 
 const socialImageURL = new URL(
@@ -30,7 +32,10 @@ const loadFontURLs = LOAD_FONTS.map(f => f.url);
 ---
 
 <!doctype html>
-<html lang={pageLocale}>
+<html
+  lang={pageLocale}
+  class={`${scrollSmooth && "scroll-smooth"}`}
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />

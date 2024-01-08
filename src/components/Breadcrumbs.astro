@@ -27,12 +27,12 @@ breadcrumbList[0] === "posts" &&
               aria-current="page"
             >
               {/* make the last part lowercase in Home > Tags > some-tag */}
-              {breadcrumb}
+              {decodeURIComponent(breadcrumb)}
             </span>
           </li>
         ) : (
           <li>
-            <a href={`/${breadcrumb}`}>{breadcrumb}</a>
+            <a href={`/${breadcrumb}`}>{decodeURIComponent(breadcrumb)}</a>
             <span aria-hidden="true">&nbsp;&gt;&nbsp;</span>
           </li>
         )

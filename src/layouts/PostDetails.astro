@@ -6,6 +6,7 @@ import Tag from "@components/Tag.astro";
 import Datetime from "@components/Datetime";
 import type { CollectionEntry } from "astro:content";
 import { slugifyStr } from "@utils/slugify";
+import Giscus from "@components/Giscus.astro";
 
 export interface Props {
   post: CollectionEntry<"blog">;
@@ -70,6 +71,7 @@ const readingTime: string | undefined = remarkPluginFrontmatter?.readingTime;
         <span>Back to Top</span>
       </button>
     </div>
+    <Giscus />
   </main>
   <Footer />
 </Layout>

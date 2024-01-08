@@ -21,6 +21,21 @@ let themeValue = getPreferTheme();
 function setPreference() {
   localStorage.setItem("theme", themeValue);
   reflectPreference();
+  reflectGiscusTheme();
+}
+
+function reflectGiscusTheme() {
+  const theme = themeValue === "dark" ? "transparent_dark" : "light";
+  function sendMessage(message) {
+    const iframe = document.querySelector("iframe.giscus-frame");
+    if (!iframe) return;
+    iframe.contentWindow.postMessage({ giscus: message }, "https://giscus.app");
+  }
+  sendMessage({
+    setConfig: {
+      theme: theme,
+    },
+  });
 }
 
 function reflectPreference() {
@@ -48,11 +63,13 @@ function reflectPreference() {
 
 // set early so no page flashes / CSS is made aware
 reflectPreference();
+reflectGiscusTheme();
 
 window.onload = () => {
   function setThemeFeature() {
     // set on load so screen readers can get the latest value on the button
     reflectPreference();
+    reflectGiscusTheme();
 
     // now this script can find and listen for clicks on the control
     document.querySelector("#theme-btn")?.addEventListener("click", () => {
@@ -64,7 +81,7 @@ window.onload = () => {
   setThemeFeature();
 
   // Runs on view transitions navigation
-  document.addEventListener("astro:after-swap", setThemeFeature);
+  document.addEventListener("astro:page-load", setThemeFeature);
 };
 
 // sync with system changes

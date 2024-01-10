@@ -61,8 +61,8 @@ main {
   --color-segmented-control-button-bg: transparent;
   --color-segmented-control-button-selected-border: #8c959f;
   --color-fg-default: #1F2328;
-  --color-fg-muted: #656d76;
-  --color-fg-subtle: #6e7781;
+  --color-fg-muted: #292b2e;
+  --color-fg-subtle: #383d42;
   --color-canvas-default: transparent;
   --color-canvas-overlay: rgb(255 255 255 / 90%);
   --color-canvas-inset: transparent;
@@ -97,4 +97,28 @@ main .pagination-loader-container {
 
 main .gsc-loading-image {
   background-image: url("https://github.githubassets.com/images/mona-loading-default.gif");
+}
+
+.gsc-pagination-button {
+  background-color: var(--color-btn-bg);
+}
+
+.gsc-homepage-bg {
+  background: linear-gradient(135deg, #9debff, #9dceff, #deb5ff);
+  background-size: 600% 600%;
+  animation: gradient 21s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 2% 0%;
+  }
+
+  50% {
+    background-position: 99% 100%;
+  }
+
+  100% {
+    background-position: 2% 0%;
+  }
 }

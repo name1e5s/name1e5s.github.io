@@ -3,7 +3,7 @@ layout: ../layouts/AboutLayout.astro
 title: "About"
 ---
 
-Hi there! Welcome to my site. 
+Hi there! Welcome to my site.
 
 My name is Hai-hsin Yu, an incoming Infrastructure Engineer at [Alibaba Cloud](https://github.com/aliyun), X-Dragon Team.
 
@@ -13,9 +13,9 @@ My name is Hai-hsin Yu, an incoming Infrastructure Engineer at [Alibaba Cloud](h
 
 [萌妹的博客](https://blog.rinchannow.site/)
 
-[ツキの月](https://qjx.app/)
+[ツキの月](https://tsuki.blog/)
 
-[🧙‍♀️的博客](https://wmc1999.top/)
+[🧙‍♀️的博客](https://waruto.top/)
 
 [JmPotato 的博客](https://ipotato.me/)
 

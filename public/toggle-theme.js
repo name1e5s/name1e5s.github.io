@@ -19,7 +19,9 @@ function getPreferTheme() {
 let themeValue = getPreferTheme();
 
 function getGiscusTheme() {
-  return themeValue === "dark" ? "transparent_dark" : "/transparent_dark.css";
+  const host = window.location.protocol + "//" + window.location.host;
+  const light = host + "/transparent_light.css";
+  return themeValue === "dark" ? "transparent_dark" : light;
 }
 
 function setPreference() {

@@ -5,7 +5,7 @@ title: "About"
 
 Hi there! Welcome to my site.
 
-My name is Hai-hsin Yu, an incoming Infrastructure Engineer at [Alibaba Cloud](https://github.com/aliyun), X-Dragon Team.
+My name is Hai-hsin Yu, an Infrastructure Engineer at [Alibaba Cloud](https://github.com/aliyun), X-Dragon Team.
 
 ### 友情链接
 

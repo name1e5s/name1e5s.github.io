@@ -17,9 +17,9 @@
   "dependencies": {
     "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "4.3.13",
-    "@astrojs/rss": "^4.0.14",
+    "@astrojs/rss": "^4.0.15",
     "@resvg/resvg-js": "^2.6.2",
-    "astro": "^5.16.6",
+    "astro": "^5.16.11",
     "fuse.js": "^6.6.2",
     "github-slugger": "^2.0.0",
     "mdast-util-to-string": "^4.0.0",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@astrojs/react": "^4.4.2",
-    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/sitemap": "^3.7.0",
     "@astrojs/tailwind": "^6.0.2",
     "@divriots/jampack": "^0.20.2",
     "@tailwindcss/typography": "^0.5.19",

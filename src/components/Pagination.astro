@@ -1,0 +1,29 @@
+---
+interface Props {
+  page: number;
+  totalPages: number;
+}
+
+const { page, totalPages } = Astro.props;
+
+const prevHref = page > 1 ? (page - 1 === 1 ? "/" : `/page/${page - 1}/`) : null;
+const nextHref = page < totalPages ? `/page/${page + 1}/` : null;
+---
+
+<div class="pagination">
+  {
+    prevHref ? (
+      <a href={prevHref}>&laquo; Previous</a>
+    ) : (
+      <span class="disabled">&laquo; Previous</span>
+    )
+  }
+  &emsp;&mdash;&emsp;<strong>{page}</strong>&emsp;&mdash;&emsp;
+  {
+    nextHref ? (
+      <a href={nextHref}>Next &raquo;</a>
+    ) : (
+      <span class="disabled">Next &raquo;</span>
+    )
+  }
+</div>

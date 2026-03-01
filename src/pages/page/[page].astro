@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import Pagination from "../../components/Pagination.astro";
+import PostCard from "../../components/PostCard.astro";
+import { SITE } from "../../config";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { sortPosts, type PostEntry } from "../../lib/blog";
+
+export async function getStaticPaths() {
+  const allPosts = sortPosts(await getCollection("blog"));
+  const pages = Math.ceil(allPosts.length / SITE.postsPerPage);
+
+  return Array.from({ length: pages - 1 }, (_, index) => {
+    const page = index + 2;
+    const start = (page - 1) * SITE.postsPerPage;
+    const end = start + SITE.postsPerPage;
+
+    return {
+      params: { page: String(page) },
+      props: {
+        page,
+        entries: allPosts.slice(start, end),
+        totalPages: pages,
+      },
+    };
+  });
+}
+
+interface Props {
+  page: number;
+  entries: PostEntry[];
+  totalPages: number;
+}
+
+const { page, entries, totalPages: pageCount } = Astro.props;
+---
+
+<SiteLayout
+  title={`Blog - Page ${page}`}
+  description={SITE.subtitle}
+  canonicalPath={`/page/${page}/`}
+>
+  <div class="entry-wrapper">
+    {entries.map((post) => <PostCard post={post} headingLevel={2} />)}
+  </div>
+
+  <Pagination page={page} totalPages={pageCount} />
+</SiteLayout>

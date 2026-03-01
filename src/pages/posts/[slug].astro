@@ -1,0 +1,159 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import { SITE } from "../../config";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import {
+  buildSlugIndex,
+  getPostDate,
+  getPostMarkdownPath,
+  getPostPath,
+  sortPosts,
+} from "../../lib/blog";
+import { formatDate } from "../../lib/date";
+
+export async function getStaticPaths() {
+  const posts = sortPosts(await getCollection("blog"));
+  const slugIndex = buildSlugIndex(posts);
+
+  return Array.from(slugIndex.entries()).map(([slug, post]) => ({
+    params: { slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const canonicalPath = getPostPath(post.id);
+const markdownUrl = getPostMarkdownPath(post.id);
+const description = post.data.description ?? post.data.title;
+const publishedDate = getPostDate(post);
+const publishedTime = publishedDate.toISOString();
+const canonicalUrl = new URL(canonicalPath, SITE.url).toString();
+const aboutUrl = new URL("/about/", SITE.url).toString();
+const sortedTags = [...(post.data.tags ?? [])].sort((a, b) =>
+  a.localeCompare(b, "en", { sensitivity: "base" }),
+);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description,
+  author: {
+    "@type": "Person",
+    name: SITE.author,
+    url: aboutUrl,
+  },
+  datePublished: publishedTime,
+  url: canonicalUrl,
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonicalUrl,
+  },
+  publisher: {
+    "@type": "Person",
+    name: SITE.author,
+    url: aboutUrl,
+  },
+  keywords: sortedTags.length > 0 ? sortedTags : undefined,
+};
+---
+
+<SiteLayout
+  title={post.data.title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogType="article"
+  publishedTime={publishedTime}
+  tags={sortedTags}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+  </Fragment>
+
+  <h1>{post.data.title}</h1>
+  <p class="date" data-date={publishedTime}>{formatDate(publishedDate, "medium")}</p>
+
+  <Content />
+
+  {
+    sortedTags.length > 0 && (
+      <p class="tags">
+        This entry was tagged
+        {
+          sortedTags.map((tag, index) => (
+            <>
+              {index > 0 && (index === sortedTags.length - 1 ? " and " : ", ")}
+              <a href={`/tags/${encodeURIComponent(tag)}/`}>{tag}</a>
+            </>
+          ))
+        }
+      </p>
+    )
+  }
+
+  <p class="markdown-links">
+    <a href={markdownUrl} id="copy-markdown" hx-boost="false">copy as</a> /
+    <a href={markdownUrl} id="view-markdown" hx-boost="false">view</a> markdown
+  </p>
+
+  <script is:inline define:vars={{ markdownUrl }}>
+    document.addEventListener("DOMContentLoaded", function () {
+      const copyLink = document.getElementById("copy-markdown");
+
+      function showFlashNotification(message) {
+        const notification = document.createElement("div");
+        notification.className = "flash-notification";
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        requestAnimationFrame(() => {
+          notification.style.opacity = "1";
+        });
+
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          setTimeout(() => {
+            if (document.body.contains(notification)) {
+              document.body.removeChild(notification);
+            }
+          }, 200);
+        }, 1500);
+      }
+
+      async function copyMarkdown() {
+        try {
+          const response = await fetch(markdownUrl);
+          const markdown = await response.text();
+          await navigator.clipboard.writeText(markdown);
+          showFlashNotification("page copied as markdown to clipboard");
+        } catch (error) {
+          console.error("Failed to copy markdown:", error);
+          alert("Failed to copy markdown to clipboard");
+        }
+      }
+
+      if (copyLink) {
+        copyLink.addEventListener("click", function (event) {
+          event.preventDefault();
+          copyMarkdown();
+        });
+      }
+
+      document.addEventListener("keydown", function (event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === "c") {
+          const selection = window.getSelection();
+          if (!selection || selection.toString().length === 0) {
+            event.preventDefault();
+            copyMarkdown();
+          }
+        }
+      });
+    });
+  </script>
+</SiteLayout>

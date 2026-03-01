@@ -1,0 +1,9 @@
+---
+import { getEntry } from "astro:content";
+import ContentPage from "../components/ContentPage.astro";
+
+const entry = await getEntry("pages", "about");
+if (!entry) throw new Error("Missing about page content");
+---
+
+<ContentPage entry={entry} canonicalPath="/about/" />

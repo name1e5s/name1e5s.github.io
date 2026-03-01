@@ -1,0 +1,9 @@
+---
+import { getEntry } from "astro:content";
+import ContentPage from "../components/ContentPage.astro";
+
+const entry = await getEntry("pages", "404");
+if (!entry) throw new Error("Missing 404 page content");
+---
+
+<ContentPage entry={entry} canonicalPath="/404/" noIndex={true} />

@@ -1,0 +1,62 @@
+---
+import { formatDate } from "../lib/date";
+import { getPostDate, getPostPath, type PostEntry } from "../lib/blog";
+
+interface Props {
+  post: PostEntry;
+  headingLevel?: 2 | 3;
+}
+
+const { post, headingLevel = 2 } = Astro.props;
+const HeadingTag = headingLevel === 3 ? "h3" : "h2";
+---
+
+<article class="post-card">
+  <div class="post-date">{formatDate(getPostDate(post), "medium")}</div>
+
+  <div class="post-detail">
+    <HeadingTag class="post-title">
+      <a class="post-title-link" href={getPostPath(post.id)}>{post.data.title}</a>
+    </HeadingTag>
+
+    {post.data.description && (
+      <div class="post-summary">
+        <p>{post.data.description}</p>
+      </div>
+    )}
+  </div>
+</article>
+
+<style>
+  .post-card {
+    margin: 2rem 0;
+  }
+
+  .post-date {
+    margin: 0 0 0.25rem;
+    color: rgb(var(--gray));
+    font-size: 0.9rem;
+  }
+
+  .post-title {
+    margin: 0;
+    font-size: 1.25em;
+  }
+
+  .post-title-link {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    text-underline-offset: 4px;
+  }
+
+  .post-title-link:hover,
+  .post-title-link:focus-visible {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+  }
+
+  .post-summary p {
+    margin: 0.5rem 0 0;
+  }
+</style>

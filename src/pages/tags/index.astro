@@ -1,0 +1,43 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getTagCloud, sortPosts } from "../../lib/blog";
+
+const posts = sortPosts(await getCollection("blog"));
+const tags = getTagCloud(posts, 50);
+---
+
+<SiteLayout title="Tags" canonicalPath="/tags/">
+  <h1>Tags</h1>
+
+  <ul class="tagcloud">
+    {
+      tags.map((tag) => (
+        <li>
+          <a
+            href={`/tags/${encodeURIComponent(tag.name)}/`}
+            style={`font-size: ${tag.size}%`}
+            data-count={tag.count}
+            class="tag-link"
+          >
+            {tag.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", function () {
+      const tagLinks = document.querySelectorAll(".tag-link");
+
+      tagLinks.forEach(function (link) {
+        const count = link.getAttribute("data-count");
+        const tooltip = document.createElement("div");
+        tooltip.className = "tag-tooltip";
+        tooltip.textContent = count === "1" ? "1 article" : `${count} articles`;
+        link.appendChild(tooltip);
+      });
+    });
+  </script>
+</SiteLayout>

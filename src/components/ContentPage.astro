@@ -1,0 +1,30 @@
+---
+import { type CollectionEntry, render } from "astro:content";
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+interface Props {
+  entry: CollectionEntry<"pages">;
+  canonicalPath: string;
+  noIndex?: boolean;
+}
+
+const { entry, canonicalPath, noIndex = false } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<SiteLayout
+  title={entry.data.title}
+  description={entry.data.summary}
+  canonicalPath={canonicalPath}
+  noIndex={noIndex}
+>
+  <article>
+    <header>
+      <h1>{entry.data.title}</h1>
+    </header>
+
+    <div class="entry">
+      <Content />
+    </div>
+  </article>
+</SiteLayout>

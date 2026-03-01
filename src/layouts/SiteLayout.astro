@@ -1,0 +1,230 @@
+---
+import { SITE } from "../config";
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalPath?: string;
+  image?: string;
+  twitterCard?: "summary" | "summary_large_image";
+  ogType?: "website" | "article";
+  publishedTime?: string;
+  tags?: string[];
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description = SITE.subtitle,
+  canonicalPath = Astro.url.pathname,
+  image = "/forrest-gump-quote.jpg",
+  twitterCard = "summary",
+  ogType = "website",
+  publishedTime,
+  tags = [],
+  noIndex = false,
+} = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath, SITE.url);
+const ogImageUrl = new URL(image, SITE.url);
+const currentYear = new Date().getUTCFullYear();
+const loadFontURLs = SITE.loadFontURLs;
+
+const GENERIC_FONT_FAMILIES = new Set([
+  "serif",
+  "sans-serif",
+  "monospace",
+  "cursive",
+  "fantasy",
+  "system-ui",
+  "ui-serif",
+  "ui-sans-serif",
+  "ui-monospace",
+  "ui-rounded",
+  "emoji",
+  "math",
+  "fangsong",
+]);
+
+function toFontFamilyValue(fonts: readonly string[]): string {
+  return fonts
+    .map((font) => {
+      const trimmed = font.trim();
+      const unquoted = trimmed.replace(/^['"]|['"]$/g, "");
+      if (!unquoted) {
+        return "";
+      }
+
+      if (GENERIC_FONT_FAMILIES.has(unquoted.toLowerCase()) || /^[a-z0-9-]+$/i.test(unquoted)) {
+        return unquoted;
+      }
+      return `"${unquoted.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+    })
+    .filter(Boolean)
+    .join(", ");
+}
+
+const sansFontFamily = toFontFamilyValue(SITE.fontFamily.sans);
+const monoFontFamily = toFontFamilyValue(SITE.fontFamily.mono);
+const globalFontVars = `--font-family-sans: ${sansFontFamily}; --font-family-mono: ${monoFontFamily};`;
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="system" style={globalFontVars}>
+  <head>
+    <meta charset="utf-8" />
+    <title>{title} | {SITE.title}</title>
+    <link
+      href="/feed.atom"
+      rel="alternate"
+      title={SITE.title}
+      type="application/atom+xml"
+    />
+    <link
+      href="/feed.xml"
+      rel="alternate"
+      title={SITE.title}
+      type="application/rss+xml"
+    />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:site" content="@name1e5s1" />
+    <meta name="twitter:creator" content="@name1e5s1" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:card" content={twitterCard} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {publishedTime && <meta property="article:author" content={SITE.author} />}
+    {
+      tags.map((tag) => <meta property="article:tag" content={tag} />)
+    }
+    {noIndex && <meta name="robots" content="noindex" />}
+
+    {
+      loadFontURLs.map((url) => (
+        <link href={url} rel="stylesheet" />
+      ))
+    }
+    <link rel="stylesheet" href="/static/style.css" type="text/css" />
+
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "where": { "href_matches": "/*" },
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
+
+    <slot name="head" />
+  </head>
+  <body
+    hx-boost="true"
+    hx-ext="head-support"
+    hx-select="div.body"
+    hx-target="div.body"
+    hx-swap="outerHTML"
+  >
+    <div class="header-image">
+      <canvas id="header-canvas"></canvas>
+    </div>
+
+    <script is:inline>
+      let $THEME = null;
+
+      function selectTheme(theme) {
+        const node = document.documentElement;
+        if (theme === "system") {
+          localStorage.removeItem("theme");
+        } else {
+          localStorage.setItem("theme", theme);
+        }
+        node.setAttribute("data-theme", theme);
+        $THEME = theme;
+      }
+
+      selectTheme(localStorage.getItem("theme") || "system");
+      document.documentElement.setAttribute("data-initial-load", "true");
+
+      if (history.scrollRestoration) {
+        history.scrollRestoration = "manual";
+      }
+    </script>
+
+    <script is:inline src="/static/htmx-bundle.min.js"></script>
+    <script is:inline src="/static/app.js"></script>
+
+    <div class="container">
+      <div class="header">
+        {SITE.title}
+      </div>
+      <div class="navigation">
+        <ul>
+          <li><a href="/">blog</a></li>
+          <li><a href="/projects/">projects</a></li>
+          <li><a href="/about/">about</a></li>
+        </ul>
+      </div>
+
+      <div class="body" hx-history-elt>
+        <slot />
+      </div>
+
+      <div class="footer">
+        <p>&copy; Copyright {currentYear} by {SITE.author}.</p>
+        <p>
+          Contact me via <a href={SITE.mail}>mail</a>,
+          <a href={SITE.x}>x</a>, or
+          <a href={SITE.github}>github</a>.
+        </p>
+        <p>
+          Subscribe via
+          <a href="/feed.atom" rel="alternate" title={SITE.title} hx-boost="false">atom</a>
+          /
+          <a href="/feed.xml" rel="alternate" title={SITE.title} hx-boost="false">RSS</a>.
+        </p>
+        <p class="theme-selector" hidden>
+          Color scheme:
+          <label><input type="radio" name="theme" value="system" /> <span>auto</span></label>,
+          <label><input type="radio" name="theme" value="light" /> <span>light</span></label>,
+          <label><input type="radio" name="theme" value="dark" /> <span>dark</span></label>.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-image">
+      <canvas id="footer-canvas"></canvas>
+    </div>
+
+    <script is:inline>
+      document.querySelector(".theme-selector")?.removeAttribute("hidden");
+      document.querySelectorAll('input[name="theme"]').forEach((input) => {
+        input.checked = input.value === $THEME;
+        input.addEventListener("change", () => {
+          selectTheme(input.value);
+        });
+      });
+
+      window.setTimeout(() => {
+        document.documentElement.removeAttribute("data-initial-load");
+      }, 0);
+    </script>
+  </body>
+</html>

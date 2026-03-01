@@ -1,0 +1,104 @@
+---
+import { getCollection } from "astro:content";
+import PostCard from "../../../components/PostCard.astro";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import { getPostDate, getTagMap, sortPosts, sortPostsByTitle } from "../../../lib/blog";
+
+export async function getStaticPaths() {
+  const posts = sortPosts(await getCollection("blog"));
+  const tagMap = getTagMap(posts);
+
+  return Array.from(tagMap.entries()).map(([tagName, entries]) => ({
+    params: { tag: tagName },
+    props: {
+      tagName,
+      entries: sortPostsByTitle(entries),
+    },
+  }));
+}
+
+const { tagName, entries } = Astro.props;
+---
+
+<SiteLayout title={`Entries tagged \"${tagName}\"`} canonicalPath={`/tags/${encodeURIComponent(tagName)}/`}>
+  <h1>
+    Entries <a href="/tags/">tagged</a> "{tagName}"
+  </h1>
+
+  <div class="tag-sort-controls">
+    <p>
+      Sort entries by:
+      <label><input type="radio" name="sort" value="title" checked /> <span>title</span></label>,
+      <label><input type="radio" name="sort" value="date" /> <span>publication date</span></label>
+    </p>
+  </div>
+
+  <div id="tag-entries" class="entry-wrapper">
+    {
+      entries.map((entry, index) => (
+        <div class="tag-entry" data-idx={index} data-date={getPostDate(entry).toISOString()}>
+          <PostCard post={entry} headingLevel={2} />
+        </div>
+      ))
+    }
+  </div>
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", function () {
+      const sortControls = document.querySelectorAll('input[name="sort"]');
+      const entriesList = document.getElementById("tag-entries");
+      const storageKey = "tag-sort-preference";
+
+      if (!entriesList) {
+        return;
+      }
+
+      function sortEntries(sortBy) {
+        const entries = Array.from(entriesList.children);
+
+        entries.sort(function (a, b) {
+          if (sortBy === "title") {
+            const idxA = parseInt(a.dataset.idx, 10);
+            const idxB = parseInt(b.dataset.idx, 10);
+            return idxA - idxB;
+          }
+
+          if (sortBy === "date") {
+            const dateA = a.dataset.date || "";
+            const dateB = b.dataset.date || "";
+            return dateB.localeCompare(dateA);
+          }
+
+          return 0;
+        });
+
+        entries.forEach(function (entry) {
+          entriesList.appendChild(entry);
+        });
+      }
+
+      const savedSort = localStorage.getItem(storageKey);
+      if (savedSort) {
+        const savedControl = document.querySelector(`input[name="sort"][value="${savedSort}"]`);
+
+        if (savedControl) {
+          sortControls.forEach(function (control) {
+            control.checked = false;
+          });
+
+          savedControl.checked = true;
+          sortEntries(savedSort);
+        }
+      }
+
+      sortControls.forEach(function (control) {
+        control.addEventListener("change", function () {
+          if (this.checked) {
+            localStorage.setItem(storageKey, this.value);
+            sortEntries(this.value);
+          }
+        });
+      });
+    });
+  </script>
+</SiteLayout>

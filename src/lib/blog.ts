@@ -1,8 +1,14 @@
 import type { CollectionEntry } from "astro:content";
 
 export type PostEntry = CollectionEntry<"blog">;
+export type LlmTag = PostEntry["data"]["llmTag"];
 
 const FILE_DATE_RE = /^(\d{4})-(\d{1,2})-(\d{1,2})-/;
+const LLM_TAG_EMOJI: Record<LlmTag, string> = {
+  "hand-written": "✍️",
+  "llm-assisted": "🪄",
+  "llm-driven": "🤖",
+};
 
 function getBaseName(postId: string): string {
   const parts = postId.split("/");
@@ -73,6 +79,10 @@ export function getPostPath(postId: string): string {
 
 export function getPostMarkdownPath(postId: string): string {
   return `/posts/${toPostSlug(postId)}.md`;
+}
+
+export function getLlmTagEmoji(llmTag: LlmTag): string {
+  return LLM_TAG_EMOJI[llmTag];
 }
 
 export function sortPosts(posts: PostEntry[]): PostEntry[] {

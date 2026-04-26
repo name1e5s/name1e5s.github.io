@@ -1,6 +1,6 @@
 ---
 import { formatDate } from "../lib/date";
-import { getPostDate, getPostPath, type PostEntry } from "../lib/blog";
+import { getLlmTagEmoji, getPostDate, getPostPath, type PostEntry } from "../lib/blog";
 
 interface Props {
   post: PostEntry;
@@ -9,6 +9,7 @@ interface Props {
 
 const { post, headingLevel = 2 } = Astro.props;
 const HeadingTag = headingLevel === 3 ? "h3" : "h2";
+const titleEmoji = getLlmTagEmoji(post.data.llmTag);
 ---
 
 <article class="post-card">
@@ -16,7 +17,7 @@ const HeadingTag = headingLevel === 3 ? "h3" : "h2";
 
   <div class="post-detail">
     <HeadingTag class="post-title">
-      <a class="post-title-link" href={getPostPath(post.id)}>{post.data.title}</a>
+      <a class="post-title-link" href={getPostPath(post.id)}>{titleEmoji} {post.data.title}</a>
     </HeadingTag>
 
     {post.data.description && (

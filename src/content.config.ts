@@ -8,6 +8,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     pubDatetime: z.coerce.date().optional(),
+    llmTag: z.enum(["hand-written", "llm-assisted", "llm-driven"]).default("hand-written"),
     tags: z.array(z.string()).default([]),
   }),
 });

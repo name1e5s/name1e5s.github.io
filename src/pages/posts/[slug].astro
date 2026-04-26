@@ -4,6 +4,7 @@ import { SITE } from "../../config";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import {
   buildSlugIndex,
+  getLlmTagEmoji,
   getPostDate,
   getPostMarkdownPath,
   getPostPath,
@@ -29,6 +30,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const canonicalPath = getPostPath(post.id);
 const markdownUrl = getPostMarkdownPath(post.id);
+const titleEmoji = getLlmTagEmoji(post.data.llmTag);
 const description = post.data.description ?? post.data.title;
 const publishedDate = getPostDate(post);
 const publishedTime = publishedDate.toISOString();
@@ -75,7 +77,7 @@ const jsonLd = {
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
   </Fragment>
 
-  <h1>{post.data.title}</h1>
+  <h1>{titleEmoji} {post.data.title}</h1>
   <p class="date" data-date={publishedTime}>{formatDate(publishedDate, "medium")}</p>
 
   <Content />

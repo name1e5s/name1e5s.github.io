@@ -171,6 +171,19 @@ div.body pre code,
 div.body code,
 div.body tt     { line-break: auto; word-break: break-word; overflow-wrap: anywhere; }
 div.body pre    { white-space: pre-wrap; }
+div.body pre.mermaid {
+  overflow-x: auto;
+  text-align: center;
+  white-space: pre;
+  border: 1px solid var(--table-border-color);
+  background: var(--table-background-color);
+}
+div.body pre.mermaid svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
 
 /* tables */
 table           { border: 1px solid var(--table-border-color); border-collapse: collapse;

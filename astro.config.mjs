@@ -8,6 +8,10 @@ export default defineConfig({
   site: 'https://blog.hai-hs.in/',
   integrations: [mdx(), sitemap()],
   markdown: {
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['mermaid'],
+    },
     shikiConfig: {
       langAlias: {
         pycon: 'python',

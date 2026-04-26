@@ -48,3 +48,11 @@ llms.txt 的内容格式示例：
 ```
 
 然后等待完成即可。现在可以通过 https://blog.hai-hs.in/llms.txt 来访问。
+
+```mermaid
+flowchart LR
+    A[Markdown posts and pages] --> B[Astro content collections]
+    B --> C[HTML pages]
+    B --> D[Raw Markdown routes]
+    D --> E[llms.txt index]
+```

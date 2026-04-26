@@ -170,6 +170,100 @@ const globalFontVars = `--font-family-sans: ${sansFontFamily}; --font-family-mon
 
     <script is:inline src="/static/htmx-bundle.min.js"></script>
     <script is:inline src="/static/app.js"></script>
+    <script>
+      const mermaidSourceAttribute = "data-mermaid-source";
+
+      function getMermaidTheme() {
+        const theme = document.documentElement.getAttribute("data-theme");
+        if (theme === "dark") return "dark";
+        if (theme === "light") return "default";
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default";
+      }
+
+      function prepareMermaidBlocks(root = document) {
+        root.querySelectorAll("pre > code.language-mermaid").forEach((code) => {
+          const pre = code.parentElement;
+          if (!pre || pre.classList.contains("mermaid")) return;
+
+          const source = code.textContent || "";
+          pre.className = "mermaid";
+          pre.removeAttribute("style");
+          pre.setAttribute(mermaidSourceAttribute, source);
+          pre.textContent = source;
+        });
+      }
+
+      function resetMermaidBlocks(root = document) {
+        root.querySelectorAll(`pre.mermaid[${mermaidSourceAttribute}]`).forEach((pre) => {
+          pre.textContent = pre.getAttribute(mermaidSourceAttribute) || "";
+          pre.removeAttribute("data-processed");
+          pre.removeAttribute("id");
+        });
+      }
+
+      let mermaidModulePromise;
+      let mermaidRenderPromise = Promise.resolve();
+
+      async function renderMermaid(root = document, { force = false } = {}) {
+        prepareMermaidBlocks(root);
+
+        if (force) {
+          resetMermaidBlocks(document);
+        }
+
+        const diagrams = Array.from(document.querySelectorAll("pre.mermaid")).filter(
+          (diagram) => !diagram.hasAttribute("data-processed"),
+        );
+        if (diagrams.length === 0) return;
+
+        mermaidModulePromise ??= import("mermaid");
+        const { default: mermaid } = await mermaidModulePromise;
+        const fontFamily = getComputedStyle(document.documentElement)
+          .getPropertyValue("--font-family-sans")
+          .trim();
+
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+          theme: getMermaidTheme(),
+          fontFamily,
+        });
+
+        await mermaid.run({ nodes: diagrams });
+      }
+
+      function scheduleMermaidRender(root = document, options = {}) {
+        mermaidRenderPromise = mermaidRenderPromise
+          .catch(() => {})
+          .then(() => renderMermaid(root, options))
+          .catch((error) => {
+            console.error("Failed to render Mermaid diagrams:", error);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => scheduleMermaidRender());
+      } else {
+        scheduleMermaidRender();
+      }
+
+      document.addEventListener("htmx:afterSettle", () => {
+        scheduleMermaidRender();
+      });
+
+      new MutationObserver(() => {
+        scheduleMermaidRender(document, { force: true });
+      }).observe(document.documentElement, {
+        attributeFilter: ["data-theme"],
+        attributes: true,
+      });
+
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+        if (document.documentElement.getAttribute("data-theme") === "system") {
+          scheduleMermaidRender(document, { force: true });
+        }
+      });
+    </script>
 
     <div class="container">
       <div class="header">

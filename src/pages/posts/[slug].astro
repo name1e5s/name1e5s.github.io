@@ -72,7 +72,7 @@ const jsonLd = {
   tags={sortedTags}
 >
   <Fragment slot="head">
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
   </Fragment>
 
   <h1>{post.data.title}</h1>
@@ -101,7 +101,7 @@ const jsonLd = {
     <a href={markdownUrl} id="view-markdown" hx-boost="false">view</a> markdown
   </p>
 
-  <script is:inline define:vars={{ markdownUrl }}>
+  <script is:inline>
     document.addEventListener("DOMContentLoaded", function () {
       const copyLink = document.getElementById("copy-markdown");
 
@@ -127,8 +127,10 @@ const jsonLd = {
       }
 
       async function copyMarkdown() {
+        if (!(copyLink instanceof HTMLAnchorElement)) return;
+
         try {
-          const response = await fetch(markdownUrl);
+          const response = await fetch(copyLink.href);
           const markdown = await response.text();
           await navigator.clipboard.writeText(markdown);
           showFlashNotification("page copied as markdown to clipboard");
